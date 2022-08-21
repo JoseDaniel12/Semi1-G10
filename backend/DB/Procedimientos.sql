@@ -15,7 +15,8 @@ BEGIN
 	ELSE
 		INSERT INTO usuario(nombre_usuario, correo, contrasenia) 
 			VALUES(in_usuario, in_correo, in_contrasenia);
-		SELECT 200 AS codigo, 'Se registró usuario' AS mensaje;
+		SELECT 200 AS codigo, 'Se registro usuario' AS mensaje;
+		COMMIT;
 	END IF;
 END;
 
@@ -23,19 +24,17 @@ CALL Registrar('William2', 'corre45o@gmail.com', '12a34');
 SELECT * FROM usuario;
 
 #-------------------------------------------
-# Procedimiento para registrar usuarios
+# Procedimiento para login
 #-------------------------------------------
 DROP PROCEDURE IF EXISTS Login;
 CREATE PROCEDURE Login (
-	IN in_usuario_correo VARCHAR(250),
-	IN in_contrasenia VARCHAR(250)
+	IN in_usuario_correo VARCHAR(250)
 )
 BEGIN
 	SELECT * FROM usuario
-	WHERE ((correo = in_usuario_correo) OR (nombre_usuario = in_usuario_correo))
-		AND (contrasenia = in_contrasenia);
+	WHERE ((correo = in_usuario_correo) OR (nombre_usuario = in_usuario_correo));
 END;
 
-CALL Login('William2', '12a34');
-CALL Login('corre45o@gmail.com', '12a34');
+CALL Login('William2');
+CALL Login('corre45o@gmail.com');
 SELECT * FROM usuario;
