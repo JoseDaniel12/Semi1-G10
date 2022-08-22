@@ -2,16 +2,17 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var mysql = require('mysql');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 const cors = require('cors');
+const encriptacion = require("./encriptacion");
 
 var corsOptions = { origin: true, optionSuccessStatus: 200 };
 app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-const port = process.env.API_PUERTO
+const port = process.env.NODE_PUERTO
 const conexion = mysql.createConnection({
         host: process.env.BASE_HOST,
         user: process.env.BASE_USER,
@@ -26,16 +27,16 @@ app.get('/', function (req, res) {
 app.post('/registrar', function (req, res) {
         var usuario = req.body.usuario;
         var correo = req.body.correo;
-        var contrasenia = req.body.contrasenia;
+        var contrasenia = encriptacion.encriptar(req.body.contrasenia);
 
-        var query = "CALL Registrar('"+ usuario + "', '" + correo + "','" + contrasenia + "');";
+        var query = "CALL Registrar('" + usuario + "', '" + correo + "','" + contrasenia + "');";
         console.log(query)
         conexion.query(query, async function (err, result) {
                 if (err) {
                         throw err;
                 } else {
                         var resultado = result[0][0];
-                        res.status(resultado.codigo).json(resultado.mensaje)
+                        res.status(resultado.codigo).json({ 'mensaje': resultado.mensaje })
                 }
         });
 })
@@ -44,18 +45,21 @@ app.post('/login', function (req, res) {
         var usuario_correo = req.body.usuario_correo;
         var contrasenia = req.body.contrasenia;
 
-        var query = "CALL Login('"+ usuario_correo + "', '" + contrasenia + "');";
+        var query = "CALL Login('" + usuario_correo + "');";
         console.log(query)
         conexion.query(query, async function (err, result) {
                 if (err) {
                         throw err;
                 } else {
                         var resultado = result[0][0];
-                        //console.log(resultado);
-                        if(resultado != undefined){
-                                res.status(200).json(resultado)
-                        }else{
-                                res.status(400).json({})
+                        if (resultado != undefined) {
+                                if (encriptacion.comparacion(contrasenia, resultado.contrasenia)) {
+                                        res.status(200).json(resultado)
+                                } else {
+                                        res.status(400).json({ caso: 2, mensaje: 'contrasenia incorrecta' })
+                                }
+                        } else {
+                                res.status(400).json({ caso: 1, mensaje: 'correo o usuario no existe' })
                         }
                 }
         });
