@@ -1,0 +1,17 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto';
+}
+
+.foto-perfil {
+    border-radius: 50%;
+}
+
+.bg-workspace {
+    background-image: url(/src/assets/office-work.jpg);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}

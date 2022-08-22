@@ -6,12 +6,9 @@ export const useAuthStore = () => {
     const dispatch = useDispatch();
     const { status, user, error } = useSelector(state => state.auth);
 
-    const startLogin = () => {
+    const startLogin = (user) => {
         dispatch(onChecking());
-
-        const user = { name: 'Jeff', id: 123 };
         localStorage.setItem('user', JSON.stringify(user));
-
         dispatch(onLogin(user));
     }
 
@@ -28,7 +25,7 @@ export const useAuthStore = () => {
             if (!user) return startLogout();
 
             dispatch(onLogin(JSON.parse(user)));
-        }, 1000)
+        }, 200)
     }
 
     return {
