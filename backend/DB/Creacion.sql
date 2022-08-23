@@ -19,10 +19,10 @@ CREATE TABLE usuario (
 );
 
 CREATE TABLE archivo (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	nombre VARCHAR(250),
-	visibilidad BIT,
 	usuario INT,
+	s3_key VARCHAR(250),
+	visibilidad BIT,
+	PRIMARY KEY (usuario, s3_key),
 	FOREIGN KEY (usuario) REFERENCES usuario (id) ON DELETE CASCADE  
 );
 
@@ -37,8 +37,6 @@ CREATE TABLE amistad (
 -- Ejemplos de insercion
 INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('William', 'correo@gmail.com', '12a34');
 INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('Alejandro', 'correo1@gmail.com', '4321');
-INSERT INTO archivo(nombre, visibilidad, usuario) VALUES('archivoPublico.pdf', 0, 1);
-INSERT INTO archivo(nombre, visibilidad, usuario) VALUES('archivoPrivado.pdf', 1, 1);
 INSERT INTO amistad(usuario1, usuario2) VALUES(1, 2);
 
 -- Ver tablas
@@ -55,10 +53,6 @@ DELETE FROM amistad;
 SET  @num := 0;
 UPDATE usuario SET id = @num := (@num+1);
 ALTER TABLE usuario AUTO_INCREMENT =1;
-
-SET  @num := 0;
-UPDATE archivo SET id = @num := (@num+1);
-ALTER TABLE archivo AUTO_INCREMENT =1;
 
 SET  @num := 0;
 UPDATE amistad SET id = @num := (@num+1);
