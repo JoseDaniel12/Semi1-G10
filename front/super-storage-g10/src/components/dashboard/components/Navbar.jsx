@@ -22,7 +22,7 @@ export const Navbar = ({drawerWidth, handleDrawerToggle}) => {
                     <MenuOutlined />
                 </IconButton>
                 <Grid container direction='row' justifyContent='space-between' alignItems='center'>
-                    <Typography variant='h6' noWrap component='div'>Dashboard</Typography>
+                    <Typography variant='h6' noWrap component='div'>SuperStorage</Typography>
                     {/* <IconButton
                         color='error'
                         >

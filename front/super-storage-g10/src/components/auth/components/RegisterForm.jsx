@@ -16,7 +16,7 @@ export const RegisterForm = () => {
         if (password !== password2 ) return setErrorPwd(true);
         else setErrorPwd(false);
 
-        console.log(foto, usuario, email)
+        console.log(foto, usuario, email, password, password2)
     } 
 
     const showPhoto = (e) => {
@@ -62,8 +62,7 @@ export const RegisterForm = () => {
                     <Button variant="contained" component="label" sx={{ mb: 2 }}>
                         Subir foto
                         <input
-                            { ...register('foto', { required: true }) } 
-                            onChange={showPhoto}
+                            { ...register('foto', { required: true, onChange: showPhoto}) }
                             type="file" accept="image/png, image/jpeg, image/jpg" hidden  />
                     </Button>
                     <br />

@@ -20,12 +20,10 @@ export const useAuthStore = () => {
     const startCheckAuth = () => {
         dispatch(onChecking());
 
-        setTimeout(() => {
-            const user = localStorage.getItem('user');
-            if (!user) return startLogout();
+        const user = localStorage.getItem('user');
+        if (!user) return startLogout();
 
-            dispatch(onLogin(JSON.parse(user)));
-        }, 200)
+        dispatch(onLogin(JSON.parse(user)));
     }
 
     return {

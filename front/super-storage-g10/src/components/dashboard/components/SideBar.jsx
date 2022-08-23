@@ -1,13 +1,25 @@
 import { Box, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
-import { InboxOutlined, MailOutline } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import FolderDeleteIcon from '@mui/icons-material/FolderDelete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import BackupTableIcon from '@mui/icons-material/BackupTable';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+
+import { useAuthStore } from '../../../hooks/useAuthStore';
+import { useActivityStore } from "../../../hooks/useActivityStore";
+import { activityTypes } from "../../../types/activityTypes";
 
 export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => {
+
+    const { startLogout } = useAuthStore();
+    const { startChange } = useActivityStore();
+
+    const handleClickItem = (activity) => {
+        startChange(activity);
+        handleDrawerToggle();
+    }
 
     const drawer = (
         <div>
@@ -27,7 +39,15 @@ export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => 
             <Divider />
             <List>
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => handleClickItem(activityTypes.misArchivos)}>
+                        <ListItemIcon>
+                            <BackupTableIcon />
+                        </ListItemIcon>          
+                        <ListItemText primary={"Mis archivos"} />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleClickItem(activityTypes.subir)}>
                         <ListItemIcon>
                             <UploadFileIcon />
                         </ListItemIcon>          
@@ -35,7 +55,7 @@ export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => 
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => handleClickItem(activityTypes.editar)}>
                         <ListItemIcon>
                             <DriveFileRenameOutlineIcon />
                         </ListItemIcon>          
@@ -43,7 +63,7 @@ export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => 
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => handleClickItem(activityTypes.eliminar)}>
                         <ListItemIcon>
                             <FolderDeleteIcon />
                         </ListItemIcon>          
@@ -52,7 +72,7 @@ export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => 
                 </ListItem>
                 <Divider />
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => handleClickItem(activityTypes.agregarAmigos)}>
                         <ListItemIcon>
                             <PersonAddIcon />
                         </ListItemIcon>          
@@ -60,16 +80,16 @@ export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => 
                     </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => handleClickItem(activityTypes.verArchivos)}>
                         <ListItemIcon>
-                            <BackupTableIcon />
+                            <FolderSharedIcon />
                         </ListItemIcon>          
                         <ListItemText primary={"Ver archivos"} />
                     </ListItemButton>
                 </ListItem>
                 <Divider />
                 <ListItem disablePadding>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => startLogout()}>
                         <ListItemIcon>
                             <LogoutIcon />
                         </ListItemIcon>          
