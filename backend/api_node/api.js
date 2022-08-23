@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var mysql = require('mysql');
+
 require('dotenv').config({ path: '../.env' });
 
 const cors = require('cors');
@@ -23,6 +24,15 @@ const conexion = mysql.createConnection({
 app.get('/', function (req, res) {
         res.json({ message: 'Semi1_Grupo10' })
 })
+
+const exphbrs = require('express-handlebars');
+const fileUpload = require('express-fileupload');
+app.use(fileUpload({
+        useTempFiles: true,
+        tempFileDir: '/temp/',
+        debug: true
+}));
+
 
 app.post('/registrar', function (req, res) {
         var usuario = req.body.usuario;
@@ -64,6 +74,8 @@ app.post('/login', function (req, res) {
                 }
         });
 })
+
+app.use('/archivos', require('./routes/archivos.routes'));
 
 app.listen(port);
 console.log("Escuchando en el puerto", port);
