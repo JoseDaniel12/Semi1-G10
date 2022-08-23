@@ -22,7 +22,7 @@ const getBueckets = () => {
 const uploadToBucket = (userId, file, fileName) => {
     const stream = fs.createReadStream(file.tempFilePath);
     const extension = file.name.split(".")[1];
-    const key = "user-" + userId + "/" + fileName + "." + extension;
+    const key = userId + "/" + fileName + "." + extension;
     const params = {
         Bucket: bucket,
         Key: key,
@@ -33,7 +33,7 @@ const uploadToBucket = (userId, file, fileName) => {
 
 
 const removeFromBucket =  async (userId, fileName) => {
-    const key = "user-" + userId + "/" + fileName;
+    const key = userId + "/" + fileName;
     const params = {
         Bucket: bucket,
         Key: key,
