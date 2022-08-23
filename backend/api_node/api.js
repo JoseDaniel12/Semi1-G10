@@ -45,7 +45,8 @@ app.post('/registrar', function (req, res) {
                         throw err;
                 } else {
                         var resultado = result[0][0];
-                        res.status(resultado.codigo).json({ 'mensaje': resultado.mensaje })
+                        console.log(resultado);
+                        res.status(resultado.codigo).json(resultado)
                 }
         });
 })

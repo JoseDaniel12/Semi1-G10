@@ -15,7 +15,7 @@ BEGIN
 	ELSE
 		INSERT INTO usuario(nombre_usuario, correo, contrasenia) 
 			VALUES(in_usuario, in_correo, in_contrasenia);
-		SELECT 200 AS codigo, 'Se registro usuario' AS mensaje;
+		SELECT 200 AS codigo, 'Se registro usuario' AS mensaje, u.* FROM usuario u WHERE id = (SELECT MAX(id) FROM usuario);
 		COMMIT;
 	END IF;
 END;
