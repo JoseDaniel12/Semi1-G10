@@ -29,8 +29,7 @@ const exphbrs = require('express-handlebars');
 const fileUpload = require('express-fileupload');
 app.use(fileUpload({
         useTempFiles: true,
-        tempFileDir: '/temp/',
-        debug: true
+        tempFileDir: '/temp/'
 }));
 
 
