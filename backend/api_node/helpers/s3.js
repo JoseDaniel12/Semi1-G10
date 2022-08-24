@@ -8,7 +8,7 @@ const secretAccessKey = process.env.AWS_SECRET_KEY;
 const s3 = new S3({
     region,
     accessKeyId,
-    secretAccessKey 
+    secretAccessKey
 });
 
 const bucket = 'archivos-g10-p1';
@@ -26,19 +26,20 @@ const uploadToBucket = (userId, file, fileName) => {
     const params = {
         Bucket: bucket,
         Key: key,
-        Body: stream
+        Body: stream,
+        ContentType: 'image'
     };
     return s3.upload(params).promise();
 };
 
 
-const removeFromBucket =  async (userId, fileName) => {
+const removeFromBucket = async (userId, fileName) => {
     const key = userId + "/" + fileName;
     const params = {
         Bucket: bucket,
         Key: key,
     };
-    
+
     await s3.deleteObject(params).promise();
 };
 
