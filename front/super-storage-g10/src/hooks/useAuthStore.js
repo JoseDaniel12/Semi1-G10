@@ -31,11 +31,18 @@ export const useAuthStore = () => {
 
         try {
             const { data } = await storageApi.post('registrar', { "usuario": usuario, "correo": email, "contrasenia": password });
-            console.log(data);
-            //localStorage.setItem('user', JSON.stringify(data));
-            //dispatch(onLogin(data));
+            delete data.codigo;
+            delete data.mensaje;
+
+            localStorage.setItem('user', JSON.stringify(data));
+            dispatch(onLogin(data));
         } catch (error) {
-            console.log(error)
+            Swal.fire({
+                icon: 'error',
+                title: 'Registro incorrecto',
+                text: 'El usuario ya existe',
+                confirmButtonColor: '#006064',
+            });
             dispatch(onLogout());
         }
     }

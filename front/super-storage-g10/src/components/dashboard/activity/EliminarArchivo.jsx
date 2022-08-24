@@ -4,14 +4,15 @@ import { useState } from "react";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FolderDeleteIcon from '@mui/icons-material/FolderDelete';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import { useStorageStore } from "../../../hooks/useStorageStore";
 
 export const EliminarArchivo = () => {
 
     const { register, handleSubmit, formState: {errors} } = useForm()
+    const { startBorrarArchivo } = useStorageStore();
 
     const handleNuevo = (data) => {
-        console.log(data)
-        console.log(data.archivo)
+        startBorrarArchivo(data);
     }
 
     return (
@@ -28,7 +29,7 @@ export const EliminarArchivo = () => {
                             label="Seleccionar archivo"
                             { ...register("archivo", { required: true }) }
                         >
-                            <MenuItem value={10}>10</MenuItem>
+                            <MenuItem value={'tareaprivada.png'}>1 tarea privada</MenuItem>
                             <MenuItem value={20}>20</MenuItem>
                             <MenuItem value={30}>30</MenuItem>
                         </Select>
