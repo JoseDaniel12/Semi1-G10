@@ -33,11 +33,7 @@ const uploadToBucket = (userId, file, fileName) => {
         Bucket: bucket,
         Key: key,
         Body: stream,
-<<<<<<< HEAD
-        ContentType: 'image'
-=======
         ContentType: content_type
->>>>>>> d7da3e92f557beeec05f0eb883260dfc85eeed6d
     };
     return s3.upload(params).promise();
 };
