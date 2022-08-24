@@ -45,9 +45,24 @@ def Registrar():
             cur.callproc('Registrar', (usuario, correo, contrasenia.decode()))
             mensaje = cur.fetchone()
 
-            return {'mensaje': mensaje[1]}, mensaje[0]
+            print(mensaje)
+
+            if mensaje[0] == 200:
+                usuario = {
+                    "codigo": 200,
+                    "mensaje": mensaje[1],
+                    "id": mensaje[2],
+                    "nombre_usuario": mensaje[3],
+                    "correo": mensaje[4],
+                    "contrasenia": mensaje[5],
+                    "formatoFoto": mensaje[6]
+                }
+
+                return usuario, mensaje[0]
+            else:
+                return { 'mensaje': mensaje[1] }, mensaje[0]
         except:
-            return {'mensaje': 'Error en la base de datos'}, 400
+            return { 'mensaje': 'Error en la base de datos' }, 400 
 
 
 @app.route('/login', methods=['POST'])
