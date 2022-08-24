@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, CardMedia, IconButton, Tooltip, Typography } from "@mui/material"
+import { Box, Card, CardContent, CardMedia, IconButton, Tooltip, Typography } from "@mui/material"
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 
 export const FileCard = () => {
@@ -26,9 +26,9 @@ export const FileCard = () => {
             </Box>
             <CardMedia
                 component="img"
-                sx={{ width: 151 }}
-                image="https://img4.yna.co.kr/etc/inner/SP/2022/05/05/ASP20220505000300883_01_i_P4.jpg"
-                alt="Live from space album cover"
+                sx={{ width: 145 }}
+                image="http://127.0.0.1:5173/src/assets/img-doc.jpg"
+                alt="Imagen archivo"
             />
         </Card>
     )

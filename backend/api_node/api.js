@@ -7,6 +7,8 @@ require('dotenv').config({ path: '../.env' });
 
 const cors = require('cors');
 const encriptacion = require("./encriptacion");
+const { uploadToBucket, removeFromBucket } = require('./helpers/s3');
+
 
 var corsOptions = { origin: true, optionSuccessStatus: 200 };
 app.use(cors(corsOptions));
@@ -37,15 +39,22 @@ app.post('/registrar', function (req, res) {
         var usuario = req.body.usuario;
         var correo = req.body.correo;
         var contrasenia = encriptacion.encriptar(req.body.contrasenia);
+        const { foto } = req.files;
+        var extensionFoto = foto.name.split(".")[1];
 
-        var query = "CALL Registrar('" + usuario + "', '" + correo + "','" + contrasenia + "');";
+        var query = "CALL Registrar('" + usuario + "','" + correo + "','" + contrasenia + "','" + extensionFoto + "');";
         console.log(query)
         conexion.query(query, async function (err, result) {
                 if (err) {
                         throw err;
                 } else {
                         var resultado = result[0][0];
-                        res.status(resultado.codigo).json({ 'mensaje': resultado.mensaje })
+                        console.log(resultado);
+
+                        // guardar la foto de perfil
+                        const subirFoto = await uploadToBucket('fotos', foto, resultado.id);
+
+                        res.status(resultado.codigo).json(resultado);
                 }
         });
 })

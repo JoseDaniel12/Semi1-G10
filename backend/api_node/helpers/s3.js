@@ -23,11 +23,21 @@ const uploadToBucket = (userId, file, fileName) => {
     const stream = fs.createReadStream(file.tempFilePath);
     const extension = file.name.split(".")[1];
     const key = userId + "/" + fileName + "." + extension;
+    var content_type = 'image'
+    if (extension == 'txt') {
+        content_type = extension
+    } else if (extension == 'pdf') {
+        content_type = 'application/pdf'
+    }
     const params = {
         Bucket: bucket,
         Key: key,
         Body: stream,
+<<<<<<< HEAD
         ContentType: 'image'
+=======
+        ContentType: content_type
+>>>>>>> d7da3e92f557beeec05f0eb883260dfc85eeed6d
     };
     return s3.upload(params).promise();
 };

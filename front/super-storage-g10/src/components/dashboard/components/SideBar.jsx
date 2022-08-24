@@ -13,7 +13,7 @@ import { activityTypes } from "../../../types/activityTypes";
 
 export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => {
 
-    const { startLogout } = useAuthStore();
+    const { user, startLogout } = useAuthStore();
     const { startChange } = useActivityStore();
 
     const handleClickItem = (activity) => {
@@ -32,7 +32,10 @@ export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => 
                 <Grid item xs={12}>
                     <br/>
                     <img className="foto-perfil" src="https://www.prensalibre.com/wp-content/uploads/2018/12/eb1911fd-fc8b-42ef-a0e8-43119bd17ac7.jpg" width="100" heigth="100" />
-                    <Typography variant='h6' noWrap component='div'>Grupo 9</Typography>
+                    <Typography variant='h6' noWrap component='div'>{user.nombre_usuario}</Typography>
+                    <Typography variant="subtitle1" color="text.secondary" component="div">
+                        {user.correo}
+                    </Typography>
                 </Grid>
             </Grid>
             <br/>

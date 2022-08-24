@@ -4,17 +4,19 @@ import { useState } from "react";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import { useStorageStore } from "../../../hooks/useStorageStore";
 
 export const SubirArchivo = () => {
 
     const { register, handleSubmit, formState: {errors} } = useForm()
+    const { startSubirArchivo } = useStorageStore();
+
     const [previewFile, setPreviewFile] = useState('');
     const [url, setURL] = useState('');
     const [esImagen, setEsImagen] = useState(false);
 
     const handleNuevo = (data) => {
-        console.log(data)
-        console.log(data.archivo)
+        startSubirArchivo(data);
     }
 
     const showFile = (e) => {
@@ -47,11 +49,11 @@ export const SubirArchivo = () => {
                         <FormLabel>Tipo</FormLabel>
                         <RadioGroup row
                             aria-labelledby="demo-row-radio-buttons-group-label"
-                            defaultValue="publico"
+                            defaultValue="1"
                             { ...register("tipo") }
                             >
-                            <FormControlLabel { ...register("tipo") } value="publico" control={<Radio />} label="Publico" />
-                            <FormControlLabel { ...register("tipo") } value="privado" control={<Radio />} label="Privado" />
+                            <FormControlLabel { ...register("tipo") } value="1" control={<Radio />} label="Publico" />
+                            <FormControlLabel { ...register("tipo") } value="0" control={<Radio />} label="Privado" />
                         </RadioGroup>
                     </FormControl>
                     <Divider/>

@@ -1,22 +1,22 @@
-import { ButtonGroup, Alert, TextField, Button, Grid, Typography } from "@mui/material";
+import { Alert, TextField, Button, Grid } from "@mui/material";
 import { useAuthStore } from "../../../hooks/useAuthStore";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 
 export const RegisterForm = () => {
 
-    const { startLogin } = useAuthStore();
+    const { startRegister } = useAuthStore();
     const { register, handleSubmit, formState: {errors} } = useForm();
     const [errorPwd, setErrorPwd] = useState(false);
     const [previewFoto, setPreviewFoto] = useState('');
 
     const handleRegister = (data) => {
-        const { usuario, email, password, password2, foto } = data;
+        const { password, password2 } = data;
 
         if (password !== password2 ) return setErrorPwd(true);
         else setErrorPwd(false);
 
-        console.log(foto, usuario, email, password, password2)
+        startRegister(data);
     } 
 
     const showPhoto = (e) => {

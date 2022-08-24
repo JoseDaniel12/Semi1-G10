@@ -5,7 +5,8 @@ DROP PROCEDURE IF EXISTS Registrar;
 CREATE PROCEDURE Registrar (
 	IN in_usuario VARCHAR(250),
 	IN in_correo VARCHAR(250),
-	IN in_contrasenia VARCHAR(250)
+	IN in_contrasenia VARCHAR(250),
+	IN in_formatoFoto VARCHAR(5)
 )
 BEGIN
 	IF EXISTS (SELECT id FROM usuario WHERE correo = in_correo) THEN
@@ -13,9 +14,9 @@ BEGIN
 	ELSEIF EXISTS (SELECT id FROM usuario WHERE nombre_usuario = in_usuario) THEN
 		SELECT 400 AS codigo, 'Usuario ya en uso' AS mensaje;
 	ELSE
-		INSERT INTO usuario(nombre_usuario, correo, contrasenia) 
-			VALUES(in_usuario, in_correo, in_contrasenia);
-		SELECT 200 AS codigo, 'Se registro usuario' AS mensaje;
+		INSERT INTO usuario(nombre_usuario, correo, contrasenia, formatoFoto) 
+			VALUES(in_usuario, in_correo, in_contrasenia, in_formatoFoto);
+		SELECT 200 AS codigo, 'Se registro usuario' AS mensaje, u.* FROM usuario u WHERE id = (SELECT MAX(id) FROM usuario);
 		COMMIT;
 	END IF;
 END;

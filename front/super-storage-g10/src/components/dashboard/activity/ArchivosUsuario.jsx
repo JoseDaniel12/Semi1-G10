@@ -1,9 +1,9 @@
-import { Box, Grid, Tab, Tabs, Typography } from "@mui/material"
+import { Box, Grid, Tab, Tabs } from "@mui/material"
 import { useState } from "react";
 import { TabPanel, a11yProps } from "../components/TabPanel";
+import { FileCard } from "../components/FileCard";
 import LockIcon from '@mui/icons-material/Lock';
 import PublicIcon from '@mui/icons-material/Public';
-import { FileCard } from "../components/FileCard";
 
 export const ArchivosUsuario = () => {
 
