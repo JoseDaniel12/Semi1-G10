@@ -18,12 +18,13 @@ export const useStorageStore = () => {
             formData.append("fileName", nombre);
             formData.append("visibility", parseInt(tipo));
 
-            const config = {     
-                headers: { 'content-type': 'multipart/form-data' }
-            }
-            
+            const config = { headers: { 'content-type': 'multipart/form-data' } }
             const { data } = await storageApi.post("archivos/subirArchivo", formData, config);
-            console.log(data);
+            Swal.fire({
+                icon: 'success',
+                title: 'Archivo subido',
+                confirmButtonColor: '#006064',
+            });
 
         } catch (error) {
             Swal.fire({
@@ -37,12 +38,15 @@ export const useStorageStore = () => {
 
     const startBorrarArchivo = async({archivo, password}) => {
         try {
-            const { data } = await storageApi.delete("archivos/borrarArchivo", 
-                {"userId": user.id, password, "fileName": archivo});
-            console.log(data);
+            const body = { "userId": user.id, "password": password, "fileName": archivo };
+            const { data } = await storageApi.delete("archivos/borrarArchivo", {data: body})
+            Swal.fire({
+                icon: 'success',
+                title: 'Archivo eliminado',
+                confirmButtonColor: '#006064',
+            });
 
         } catch (error) {
-            console.log(error)
             Swal.fire({
                 icon: 'error',
                 title: 'Error al eliminar el archivo',

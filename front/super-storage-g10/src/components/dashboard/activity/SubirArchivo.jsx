@@ -49,7 +49,7 @@ export const SubirArchivo = () => {
                         <FormLabel>Tipo</FormLabel>
                         <RadioGroup row
                             aria-labelledby="demo-row-radio-buttons-group-label"
-                            defaultValue="publico"
+                            defaultValue="1"
                             { ...register("tipo") }
                             >
                             <FormControlLabel { ...register("tipo") } value="1" control={<Radio />} label="Publico" />

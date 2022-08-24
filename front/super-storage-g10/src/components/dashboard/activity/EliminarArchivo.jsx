@@ -29,7 +29,7 @@ export const EliminarArchivo = () => {
                             label="Seleccionar archivo"
                             { ...register("archivo", { required: true }) }
                         >
-                            <MenuItem value={'"tareaprivada.png"'}>1 tarea privada</MenuItem>
+                            <MenuItem value={'tareaprivada.png'}>1 tarea privada</MenuItem>
                             <MenuItem value={20}>20</MenuItem>
                             <MenuItem value={30}>30</MenuItem>
                         </Select>
