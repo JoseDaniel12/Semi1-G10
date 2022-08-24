@@ -15,7 +15,8 @@ CREATE TABLE usuario (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	nombre_usuario VARCHAR(250),
 	correo VARCHAR(250),
-	contrasenia VARCHAR(250)
+	contrasenia VARCHAR(250),
+	formatoFoto VARCHAR(5)
 );
 
 CREATE TABLE archivo (
@@ -35,8 +36,8 @@ CREATE TABLE amistad (
 );
 
 -- Ejemplos de insercion
-INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('William', 'correo@gmail.com', '12a34');
-INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('Alejandro', 'correo1@gmail.com', '4321');
+INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('William', 'correo@gmail.com', '12a34', 'png');
+INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('Alejandro', 'correo1@gmail.com', '4321', 'png');
 INSERT INTO amistad(usuario1, usuario2) VALUES(1, 2);
 
 -- Ver tablas
