@@ -60,9 +60,9 @@ def Registrar():
 
                 return usuario, mensaje[0]
             else:
-                return { 'mensaje': mensaje[1] }, mensaje[0]
+                return {'mensaje': mensaje[1]}, mensaje[0]
         except:
-            return { 'mensaje': 'Error en la base de datos' }, 400 
+            return {'mensaje': 'Error en la base de datos'}, 400
 
 
 @app.route('/login', methods=['POST'])
@@ -114,10 +114,47 @@ def subirArchivo():
     if file and not allowed_file(file.filename):
         return {'err': 'File type not allowed.'}, 400
 
-    key = "1/" + str("pepe.jpg")
+    # get paswword from de db
+    query = f"SELECT contrasenia AS encrypt_password FROM usuario WHERE id = {userId};  COMMIT;"
+    cur = mysql.connection.cursor()
+    cur.execute(query)
+    outcome = cur.fetchone()
+    if outcome is None:
+        return {"err": f"No existe algun usuario con el id = {userId}."}, 400
 
-    #s3.Bucket(bucket).put_object(Key=key, Body=file)
-    return {'Key': key}, 200
+    # Si la contrasñea ingresada no es igual a la encriptada de la db
+    dbEncryptedPassword = outcome[0]
+    if (not comparar(password, dbEncryptedPassword)):
+        return {"err": "La contrseña ingresada es incorrecta."}, 400
+
+    # Se verifica si el usuario ya tenia un archivo con ese nombre
+    extension = file.filename.split(".")[1]
+    key = userId + "/" + fileName + "." + extension
+    query = f'''
+        SELECT * FROM archivo
+        WHERE (
+            s3_key = '{key}' AND
+            visibilidad = {visibility} AND 
+            usuario = {userId}
+        );
+        COMMIT;
+    '''
+    cur.execute(query)
+    outcome = cur.fetchone()
+    if (outcome is None):
+        print("si entro")
+        # De no existir guarada su registro en la db
+        query = f'''
+            INSERT INTO archivo 
+            (s3_key, visibilidad, usuario) 
+            VALUES ('{key}', {visibility}, {userId});
+            COMMIT;
+        '''
+        cur.execute(query)
+        cur.fetchone()
+
+    s3.Bucket(bucket).put_object(Key=key, Body=file)
+    return {"msg": "Archivo subido exitosamente."}, 200
 
 
 @app.route('/archivos/borrarArchivo', methods=['DELETE'])

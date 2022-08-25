@@ -18,7 +18,7 @@ const subirArchivo = async (req, res) => {
 
     // Si no hay usario con esa contrasña retornar error
     if (outcome.result.length === 0) {
-        res.status(400).json({err: `No existe algun usuario con el id ${userId}.`});
+        res.status(400).json({err: `No existe algun usuario con el id = ${userId}.`});
         return;
     }
 
