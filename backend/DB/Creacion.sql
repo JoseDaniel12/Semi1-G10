@@ -23,6 +23,7 @@ CREATE TABLE archivo (
 	usuario INT,
 	s3_key VARCHAR(250),
 	visibilidad BIT,
+	fecha DATETIME,
 	PRIMARY KEY (usuario, s3_key),
 	FOREIGN KEY (usuario) REFERENCES usuario (id) ON DELETE CASCADE  
 );
@@ -58,3 +59,7 @@ ALTER TABLE usuario AUTO_INCREMENT =1;
 SET  @num := 0;
 UPDATE amistad SET id = @num := (@num+1);
 ALTER TABLE amistad AUTO_INCREMENT =1;
+
+
+
+

@@ -21,7 +21,7 @@ BEGIN
 	END IF;
 END;
 
-CALL Registrar('William2', 'corre45o@gmail.com', '12a34');
+CALL Registrar('William2', 'corre45o@gmail.com', '12a34', 'png');
 SELECT * FROM usuario;
 
 #-------------------------------------------

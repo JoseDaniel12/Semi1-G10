@@ -37,12 +37,21 @@ def home():
 def Registrar():
     if request.method == 'POST':
 
-        usuario = request.json['usuario']
-        correo = request.json['correo']
-        contrasenia = encriptar(request.json['contrasenia'])
+        usuario = request.form['usuario']
+        correo = request.form['correo']
+        contrasenia = encriptar(request.form['contrasenia'])
+
+        file = request.files['foto']
+        if file.filename == '':
+            return {'err': 'File not selected.'}, 400
+        if file and not allowed_file(file.filename):
+            return {'err': 'File type not allowed.'}, 400
+
+        extension = file.filename.split(".")[1]
+       
         try:
             cur = mysql.connection.cursor()
-            cur.callproc('Registrar', (usuario, correo, contrasenia.decode()))
+            cur.callproc('Registrar', (usuario, correo, contrasenia.decode(), extension))
             mensaje = cur.fetchone()
 
             print(mensaje)
@@ -57,6 +66,9 @@ def Registrar():
                     "contrasenia": mensaje[5],
                     "formatoFoto": mensaje[6]
                 }
+                
+                key =   "fotos/" + mensaje[2] + "." + extension
+                s3.Bucket(bucket).put_object(Key=key, Body=file)
 
                 return usuario, mensaje[0]
             else:
@@ -69,8 +81,8 @@ def Registrar():
 def Login():
     if request.method == 'POST':
 
-        usuario_correo = request.json['usuario_correo']
-        contrasenia = request.json['contrasenia']
+        usuario_correo = request.form['usuario_correo']
+        contrasenia = request.form['contrasenia']
 
         try:
             cur = mysql.connection.cursor()
@@ -83,7 +95,8 @@ def Login():
                         'id': usuario[0],
                         'nombre_usuario': usuario[1],
                         'correo': usuario[2],
-                        'contrasenia': usuario[3]
+                        'contrasenia': usuario[3],
+                        'formatoFoto': usuario[4]
                     }
                     return user, 200
                 else:
