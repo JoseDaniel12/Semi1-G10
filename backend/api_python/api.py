@@ -163,8 +163,35 @@ def deleteArchivo():
     password = request.json['password']
     fileName = request.json['fileName']
     key = "1/" + str("pepe.jpg")
-    #s3_object = s3.Object(bucket, key)
-    # s3_object.delete()
+
+    # get paswword from de db
+    query = f"SELECT contrasenia AS encrypt_password FROM usuario WHERE id = {userId};"
+    cur = mysql.connection.cursor()
+    cur.execute(query)
+    outcome = cur.fetchone()
+    if outcome is None:
+        return {"msg": f"No existe algun usuario con el id  = {userId}."}, 400
+
+    # Si la contrasñea ingresada no es igual a la encriptada de la db
+    dbEncryptedPassword = outcome[0]
+    print(dbEncryptedPassword)
+    if (not comparar(password, dbEncryptedPassword)):
+        return {"err": "La contrseña ingresada es incorrecta."}, 400
+
+    # Borra el registor del archivo en la base de datos
+    key = f"{userId}/{fileName}"
+    query = f'''
+        DELETE FROM archivo 
+        WHERE (
+            s3_key = '{key}' AND
+            usuario = {userId}
+        );
+        COMMIT;
+    '''
+    cur.execute(query)
+
+    s3_object = s3.Object(bucket, key)
+    s3_object.delete()
     return {'msg': 'File errased.'}, 200
 
 
