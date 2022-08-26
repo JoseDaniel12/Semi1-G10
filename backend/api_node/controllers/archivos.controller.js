@@ -1,7 +1,7 @@
 const {uploadToBucket, removeFromBucket} = require('../helpers/s3');
 const db_exec = require('../database/db_exec');
 const encryptor = require("../encriptacion");
-
+const date = require('../helpers/time');
 
 const subirArchivo = async (req, res) => {
     const {userId, password, fileName, visibility} = req.body;
@@ -36,7 +36,6 @@ const subirArchivo = async (req, res) => {
         SELECT * FROM archivo
         WHERE (
             s3_key = '${key}' AND
-            visibilidad = ${visibility} AND 
             usuario = ${userId}
         );
     `;
@@ -52,8 +51,8 @@ const subirArchivo = async (req, res) => {
     if (outcome.result.length === 0) {
         query = `
             INSERT INTO archivo 
-            (s3_key, visibilidad, usuario) 
-            VALUES ('${key}', ${visibility}, ${userId});
+            (s3_key, visibilidad, usuario, fecha) 
+            VALUES ('${key}', ${visibility}, ${userId}, '${date()}');
         `;
 
         try {

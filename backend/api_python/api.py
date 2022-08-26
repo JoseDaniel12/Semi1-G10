@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_mysqldb import MySQL
 from flask_cors import CORS
+from datetime import datetime
 from encriptacion import *
 import os
 import boto3
@@ -28,6 +29,12 @@ bucket = "archivos-g10-p1"
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg'}
 
 
+def get_current_date():
+    now = datetime.now()
+    curr_date = now.strftime("%Y/%m/%d %H:%M:%S")
+    return curr_date
+
+
 @app.route('/')
 def home():
     return 'Semi1_Grupo10'
@@ -48,10 +55,11 @@ def Registrar():
             return {'err': 'File type not allowed.'}, 400
 
         extension = file.filename.split(".")[1]
-       
+
         try:
             cur = mysql.connection.cursor()
-            cur.callproc('Registrar', (usuario, correo, contrasenia.decode(), extension))
+            cur.callproc('Registrar', (usuario, correo,
+                         contrasenia.decode(), extension))
             mensaje = cur.fetchone()
 
             print(mensaje)
@@ -66,8 +74,8 @@ def Registrar():
                     "contrasenia": mensaje[5],
                     "formatoFoto": mensaje[6]
                 }
-                
-                key =   "fotos/" + mensaje[2] + "." + extension
+
+                key = "fotos/" + mensaje[2] + "." + extension
                 s3.Bucket(bucket).put_object(Key=key, Body=file)
 
                 return usuario, mensaje[0]
@@ -159,8 +167,8 @@ def subirArchivo():
         # De no existir guarada su registro en la db
         query = f'''
             INSERT INTO archivo 
-            (s3_key, visibilidad, usuario) 
-            VALUES ('{key}', {visibility}, {userId});
+            (s3_key, visibilidad, usuario, fecha) 
+            VALUES ('{key}', {visibility}, {userId}, '{get_current_date()}');
             COMMIT;
         '''
         cur.execute(query)
