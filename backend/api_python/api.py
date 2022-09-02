@@ -76,7 +76,7 @@ def Registrar():
                 }
 
                 key = "fotos/" + mensaje[2] + "." + extension
-                s3.Bucket(bucket).put_object(Key=key, Body=file)
+                s3.Bucket(bucket).put_object(Key=key, Body=file, ContentType='image')
 
                 return usuario, mensaje[0]
             else:
@@ -232,7 +232,7 @@ def subirArchivo():
         cur.execute(query)
         cur.fetchone()
 
-    s3.Bucket(bucket).put_object(Key=key, Body=file)
+    s3.Bucket(bucket).put_object(Key=key, Body=file, ContentType=deducirContentType(extension))
     return {"msg": "Archivo subido exitosamente."}, 200
 
 
