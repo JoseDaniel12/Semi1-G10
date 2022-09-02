@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var mysql = require('mysql');
 
-require('dotenv').config({ path: './.env' });
+require('dotenv').config({ path: '../.env' });
 
 const cors = require('cors');
 const encriptacion = require("./encriptacion");
@@ -43,13 +43,11 @@ app.post('/registrar', function (req, res) {
         var extensionFoto = foto.name.split(".")[1];
 
         var query = "CALL Registrar('" + usuario + "','" + correo + "','" + contrasenia + "','" + extensionFoto + "');";
-        console.log(query)
         conexion.query(query, async function (err, result) {
                 if (err) {
                         throw err;
                 } else {
                         var resultado = result[0][0];
-                        console.log(resultado);
 
                         // guardar la foto de perfil
                         const subirFoto = await uploadToBucket('fotos', foto, resultado.id);
@@ -64,7 +62,6 @@ app.post('/login', function (req, res) {
         var contrasenia = req.body.contrasenia;
 
         var query = "CALL Login('" + usuario_correo + "');";
-        console.log(query)
         conexion.query(query, async function (err, result) {
                 if (err) {
                         throw err;
@@ -82,6 +79,43 @@ app.post('/login', function (req, res) {
                 }
         });
 })
+
+app.post('/allFiles', function (req, res) {
+        var userId = req.body.userId;
+
+        var query = "CALL AllFiles(" + userId + ");";
+        conexion.query(query, async function (err, result) {
+                if (err) {
+                        throw err;
+                } else {
+                        var resultado = result[0];
+                        if (resultado != undefined) {
+                                res.status(200).json({ "archivos": resultado })
+                        } else {
+                                res.status(400).json({ "archivos": [] })
+                        }
+                }
+        });
+})
+
+app.post('/archivosAmigos', function (req, res) {
+        var userId = req.body.userId;
+
+        var query = "CALL ArchivosAmigos(" + userId + ");";
+        conexion.query(query, async function (err, result) {
+                if (err) {
+                        throw err;
+                } else {
+                        var resultado = result[0];
+                        if (resultado != undefined) {
+                                res.status(200).json({ "archivos": resultado })
+                        } else {
+                                res.status(400).json({ "archivos": [] })
+                        }
+                }
+        });
+})
+
 
 app.use('/archivos', require('./routes/archivos.routes'));
 

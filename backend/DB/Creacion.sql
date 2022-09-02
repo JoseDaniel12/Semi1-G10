@@ -37,9 +37,10 @@ CREATE TABLE amistad (
 );
 
 -- Ejemplos de insercion
-INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('William', 'correo@gmail.com', '12a34', 'png');
-INSERT INTO usuario(nombre_usuario, correo, contrasenia) VALUES('Alejandro', 'correo1@gmail.com', '4321', 'png');
+INSERT INTO usuario(nombre_usuario, correo, contrasenia, formatoFoto) VALUES('William', 'correo@gmail.com', '12a34', 'png');
+INSERT INTO usuario(nombre_usuario, correo, contrasenia, formatoFoto) VALUES('Alejandro', 'correo1@gmail.com', '4321', 'png');
 INSERT INTO amistad(usuario1, usuario2) VALUES(1, 2);
+INSERT INTO amistad(usuario1, usuario2) VALUES(2, 1);
 
 -- Ver tablas
 SELECT * FROM usuario;

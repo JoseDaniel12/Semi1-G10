@@ -39,3 +39,40 @@ END;
 CALL Login('William2');
 CALL Login('corre45o@gmail.com');
 SELECT * FROM usuario;
+
+#---------------------------------------------------------
+# Procedimiento para ver todos los archivos de un usuario
+#---------------------------------------------------------
+DROP PROCEDURE IF EXISTS AllFiles;
+CREATE PROCEDURE AllFiles (
+	IN in_id_usuario INT
+)
+BEGIN
+	SELECT usuario, s3_key, CAST(visibilidad AS SIGNED) AS visibilidad, 
+	DATE_FORMAT(fecha, "%d-%m-%Y %H:%i:%s") as fecha FROM archivo WHERE usuario = in_id_usuario;
+END;
+
+CALL AllFiles(2);
+CALL AllFiles(1);
+SELECT * FROM archivo;
+
+#---------------------------------------------------------
+# Procedimiento para ver archivos de amigos
+#---------------------------------------------------------
+DROP PROCEDURE IF EXISTS ArchivosAmigos;
+CREATE PROCEDURE ArchivosAmigos (
+	IN in_id_usuario INT
+)
+BEGIN
+	SELECT ar.usuario, ar.s3_key, CAST(ar.visibilidad AS SIGNED) AS visibilidad, 
+	DATE_FORMAT(ar.fecha, "%d-%m-%Y %H:%i:%s") as fecha FROM archivo ar
+	INNER JOIN amistad am
+	ON ar.usuario = am.usuario2
+	WHERE (am.usuario1 = in_id_usuario) AND ar.visibilidad = 1;
+END;
+
+CALL ArchivosAmigos(2);
+CALL ArchivosAmigos(1);
+SELECT * FROM archivo;
+SELECT * FROM amistad;
+

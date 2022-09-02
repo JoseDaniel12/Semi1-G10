@@ -114,6 +114,64 @@ def Login():
         except:
             return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
 
+@app.route('/allFiles', methods=['POST'])
+def AllFiles():
+    if request.method == 'POST':
+
+        userId = request.form['userId']
+
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("CALL AllFiles(" + userId + ");")
+            archivos = cur.fetchall()
+
+            files = []
+
+            if archivos:
+                for archivo in archivos:
+                    print("archivo: ", archivo)
+                    file = {
+                        'usuario': archivo[0],
+                        's3_key': archivo[1],
+                        'visibilidad': archivo[2],
+                        'fecha': archivo[3]
+                    }
+                    files.append(file)
+                return {"archivos": files}, 200
+            else:
+                return {'caso': 1, 'mensaje': 'correo o usuario no existe'}, 400
+        except:
+            return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
+
+@app.route('/archivosAmigos', methods=['POST'])
+def ArchivosAmigos():
+    if request.method == 'POST':
+
+        userId = request.form['userId']
+
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("CALL ArchivosAmigos(" + userId + ");")
+            archivos = cur.fetchall()
+
+            files = []
+
+            if archivos:
+                for archivo in archivos:
+                    print("archivo: ", archivo)
+                    file = {
+                        'usuario': archivo[0],
+                        's3_key': archivo[1],
+                        'visibilidad': archivo[2],
+                        'fecha': archivo[3]
+                    }
+                    files.append(file)
+                return {"archivos": files}, 200
+            else:
+                return {'caso': 1, 'mensaje': 'correo o usuario no existe'}, 400
+        except:
+            return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
