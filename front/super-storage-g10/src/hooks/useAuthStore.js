@@ -26,14 +26,22 @@ export const useAuthStore = () => {
         }
     }
 
-    const startRegister = async({usuario, email, password}) => {
+    const startRegister = async({usuario, email, password, foto}) => {
         dispatch(onChecking());
 
         try {
-            const { data } = await storageApi.post('registrar', { "usuario": usuario, "correo": email, "contrasenia": password });
+            let formData = new FormData();
+            formData.append("usuario", usuario);
+            formData.append("correo", email);
+            formData.append("foto", foto[0]);
+            formData.append("contrasenia", password);
+
+            const config = { headers: { 'content-type': 'multipart/form-data' } }
+            const { data } = await storageApi.post("registrar", formData, config);
+
             delete data.codigo;
             delete data.mensaje;
-
+            
             localStorage.setItem('user', JSON.stringify(data));
             dispatch(onLogin(data));
         } catch (error) {

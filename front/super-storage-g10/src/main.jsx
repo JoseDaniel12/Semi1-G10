@@ -6,7 +6,7 @@ import './index.css'
 import 'animate.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <SuperStorage />
-  </React.StrictMode>
+  // </React.StrictMode>
 )

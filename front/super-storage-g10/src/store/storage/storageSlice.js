@@ -12,6 +12,10 @@ export const storageSlice = createSlice({
     name: 'storage',
     initialState,
     reducers: {
+        onArchivosUsuario: (state, {payload}) => {
+            state.publicos = payload.publicos;
+            state.privados = payload.privados;
+        },
         onSubirPublico: (state, {payload}) => {
             state.publicos.push(payload);
         },
@@ -24,5 +28,6 @@ export const storageSlice = createSlice({
 export const { 
     onSubirPrivado,
     onSubirPublico,
+    onArchivosUsuario,
     
 } = storageSlice.actions

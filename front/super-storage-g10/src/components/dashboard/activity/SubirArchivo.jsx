@@ -2,15 +2,15 @@ import { Alert, Button, Card, Divider, CardContent, FormControl, FormControlLabe
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import FileOpenIcon from '@mui/icons-material/FileOpen';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import { useStorageStore } from "../../../hooks/useStorageStore";
+import { useActivityStore } from "../../../hooks/useActivityStore";
+import { activityTypes } from "../../../types/activityTypes";
 
 export const SubirArchivo = () => {
 
     const { register, handleSubmit, formState: {errors} } = useForm()
-    const { startSubirArchivo } = useStorageStore();
-
+    
     const [previewFile, setPreviewFile] = useState('');
     const [url, setURL] = useState('');
     const [esImagen, setEsImagen] = useState(false);
