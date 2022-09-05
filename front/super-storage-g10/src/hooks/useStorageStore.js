@@ -44,12 +44,14 @@ export const useStorageStore = () => {
     const startBorrarArchivo = async({archivo, password}) => {
         try {
             const body = { "userId": user.id, "password": password, "fileName": archivo };
-            const { data } = await storageApi.delete("archivos/borrarArchivo", {data: body})
+            const { data } = await storageApi.delete("archivos/borrarArchivo", {data: body});
+
             Swal.fire({
                 icon: 'success',
                 title: 'Archivo eliminado',
                 confirmButtonColor: '#006064',
             });
+            startChange(activityTypes.misArchivos);
 
         } catch (error) {
             Swal.fire({
@@ -70,6 +72,7 @@ export const useStorageStore = () => {
             const privados = data.archivos.filter(archivo => archivo.visibilidad == 0);
 
             dispatch(onArchivosUsuario({publicos, privados}));
+            
         } catch (error) {
             console.log(error);
         }

@@ -1,18 +1,26 @@
 import { Alert, Button, Card, Divider, CardContent, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, Typography, Box, IconButton, CardMedia, CardActions, InputLabel, Select, MenuItem } from "@mui/material"
 import { useForm } from "react-hook-form";
-import { useState } from "react";
-import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FolderDeleteIcon from '@mui/icons-material/FolderDelete';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import { useStorageStore } from "../../../hooks/useStorageStore";
+import { useEffect } from "react";
+import { useAuthStore } from "../../../hooks/useAuthStore";
 
 export const EliminarArchivo = () => {
 
-    const { register, handleSubmit, formState: {errors} } = useForm()
-    const { startBorrarArchivo } = useStorageStore();
+    const { register, handleSubmit, formState: {errors} } = useForm();
+    const { user } = useAuthStore();
+    const { privados, publicos, startArchivosUsuario, startBorrarArchivo } = useStorageStore();
+    
+    useEffect(() => {
+        startArchivosUsuario();
+    }, [])
 
     const handleNuevo = (data) => {
         startBorrarArchivo(data);
+    }
+
+    const substringNombre = (valor) => {
+        return valor.substring((user.id.toString() + "/").length, valor.length)
     }
 
     return (
@@ -29,9 +37,16 @@ export const EliminarArchivo = () => {
                             label="Seleccionar archivo"
                             { ...register("archivo", { required: true }) }
                         >
-                            <MenuItem value={'tareaprivada.png'}>1 tarea privada</MenuItem>
-                            <MenuItem value={20}>20</MenuItem>
-                            <MenuItem value={30}>30</MenuItem>
+                            {
+                                publicos.map(archivo => (
+                                    <MenuItem key={archivo} value={substringNombre(archivo.s3_key)}>{substringNombre(archivo.s3_key)}</MenuItem>
+                                ))
+                            }
+                            {
+                                privados.map(archivo => (
+                                    <MenuItem key={archivo} value={substringNombre(archivo.s3_key)}>{substringNombre(archivo.s3_key)}</MenuItem>
+                                ))
+                            }
                         </Select>
                     </FormControl>
                     {errors.archivo && <Alert severity="error">Archivo <strong>requerido</strong></Alert>}

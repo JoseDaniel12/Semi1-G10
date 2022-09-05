@@ -4,12 +4,11 @@ import { useState } from "react";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import { useStorageStore } from "../../../hooks/useStorageStore";
-import { useActivityStore } from "../../../hooks/useActivityStore";
-import { activityTypes } from "../../../types/activityTypes";
 
 export const SubirArchivo = () => {
 
-    const { register, handleSubmit, formState: {errors} } = useForm()
+    const { register, handleSubmit, formState: {errors} } = useForm();
+    const { startSubirArchivo } = useStorageStore();
     
     const [previewFile, setPreviewFile] = useState('');
     const [url, setURL] = useState('');
@@ -31,6 +30,8 @@ export const SubirArchivo = () => {
         }
     }
 
+
+    
     return (
         <form onSubmit={handleSubmit(handleNuevo)}>
             <Typography variant="h5"><UploadFileIcon sx={{ mt: 1 }} /> Nuevo archivo</Typography>

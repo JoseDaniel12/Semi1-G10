@@ -39,7 +39,7 @@ export const ArchivosUsuario = () => {
                     {
                         publicos.map(archivo => 
                             (
-                                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }}>
+                                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }} key={archivo}>
                                     <FileCard archivo={archivo} idSbs={contSubstring} autor={user.nombre_usuario} />
                                 </Grid>
                             )
@@ -52,7 +52,7 @@ export const ArchivosUsuario = () => {
                     {
                         privados.map(archivo => 
                             (
-                                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }}>
+                                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }} key={archivo}>
                                     <FileCard archivo={archivo} idSbs={contSubstring} autor={user.nombre_usuario} />
                                 </Grid>
                             )
