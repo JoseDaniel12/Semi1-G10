@@ -273,6 +273,46 @@ def deleteArchivo():
     s3_object.delete()
     return {'msg': 'File errased.'}, 200
 
+@app.route('/amigos/personas-disponibles', methods=['GET'])
+def PersonasDisponibles():
+    if request.method == 'GET':
+
+        userId = request.form['userId']
+
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute(f'''
+                SELECT noamigos.id, noamigos.nombre_usuario, noamigos.formatofoto, noamigos.archivos_publicos
+                    FROM (SELECT *
+                             FROM (SELECT u.id, u.nombre_usuario, u.formatofoto, a.archivos_publicos
+                                      FROM usuario u
+                                      LEFT JOIN
+                                      (SELECT usuario id, count(*) archivos_publicos
+                                          FROM archivo WHERE visibilidad = B'1'
+                                          GROUP BY usuario) a
+                                      ON u.id = a.id) publicos
+                             LEFT JOIN
+                             (SELECT usuario2
+                                 FROM amistad
+                                 WHERE usuario1 = {userId}) ami
+                             ON publicos.id = ami.usuario2) noamigos
+                    WHERE noamigos.usuario2 IS NULL AND noamigos.id != {userId};''')
+            personasd = cur.fetchall()
+
+            personas_disponibles = []
+
+            for persona in personasd:
+                pers = {
+                    'id': persona[0],
+                    'nombre_usuario': persona[1],
+                    'formatofoto': persona[2],
+                    'archivos_publicos': persona[3]
+                }
+                personas_disponibles.append(pers)
+            return personas_disponibles, 200
+        except:
+            return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=puerto, debug=True)
