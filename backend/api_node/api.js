@@ -118,6 +118,7 @@ app.post('/archivosAmigos', function (req, res) {
 
 
 app.use('/archivos', require('./routes/archivos.routes'));
+app.use('/amigos', require('./routes/amigos.routes'));
 
 app.listen(port);
 console.log("Escuchando en el puerto", port);

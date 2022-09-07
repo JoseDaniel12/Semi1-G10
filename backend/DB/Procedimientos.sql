@@ -75,4 +75,3 @@ CALL ArchivosAmigos(2);
 CALL ArchivosAmigos(1);
 SELECT * FROM archivo;
 SELECT * FROM amistad;
-

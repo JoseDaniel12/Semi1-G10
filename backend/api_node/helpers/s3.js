@@ -49,8 +49,21 @@ const removeFromBucket = async (userId, fileName) => {
     await s3.deleteObject(params).promise();
 };
 
+const copiarObjeto = async (userId, objetoOrigen, objetoDestino) => {
+    const keyOrigenCompleta = bucket + "/" + userId + "/" + objetoOrigen;
+    const keyDestino = userId + "/" + objetoDestino;
+    const params = {
+        Bucket: bucket,
+        CopySource: keyOrigenCompleta,
+        Key: keyDestino
+    };
+
+    await s3.copyObject(params).promise();
+};
+
 module.exports = {
     getBueckets,
     uploadToBucket,
+    copiarObjeto,
     removeFromBucket
 };

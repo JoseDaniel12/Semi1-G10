@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post('/subirArchivo', verifyFile, archivos.subirArchivo);
 router.delete('/borrarArchivo', archivos.borrarArchivo);
+router.put('/editarArchivo', archivos.editarArchivo);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const {uploadToBucket, removeFromBucket} = require('../helpers/s3');
+const {uploadToBucket, removeFromBucket, copiarObjeto} = require('../helpers/s3');
 const db_exec = require('../database/db_exec');
 const encryptor = require("../encriptacion");
 const date = require('../helpers/time');
@@ -117,7 +117,116 @@ const borrarArchivo = async (req, res) => {
     res.status(200).json({msg: 'File errased.'});
 };
 
+const editarArchivo = async (req, res) => {
+    const {userId, password, fileNameOriginal, fileNameDestino, visibilidad} = req.body;
+
+    if (visibilidad !== 1 && visibilidad !== 0) {
+        res.status(400).json({ err : "El valor de visibilidad debe ser solamente los números 0 o 1." });
+        return;
+    }
+
+    // get paswword from de db
+    let query = `SELECT contrasenia AS encrypt_password FROM usuario WHERE id = ${userId};`
+    let outcome;
+    try {
+        outcome = await db_exec.execute(query);
+    } catch(err) {
+        return {err};
+    };
+
+    // Si no hay usario con esa contrasña retornar error
+    if (outcome.result.length === 0) {
+        res.status(400).json({err: `No existe algun usuario con el id = ${userId}.`});
+        return;
+    }
+
+    // Si la contrasñea ingresada no es igual a la encriptada
+    const dbEncryptedPassword = outcome.result[0].encrypt_password;
+    if (!encryptor.comparacion(password, dbEncryptedPassword)) {
+        res.status(400).json({err: 'La contrseña ingresada es incorrecta.'});
+        return;
+    }
+    // Si fileNameDestino es vacío o nulo solo modificar la visibilidad en la base de datos.
+    if (fileNameDestino == null || fileNameDestino === "") {
+        query = `UPDATE archivo SET visibilidad = b'${visibilidad}' WHERE usuario = ${userId} AND
+                                                                          s3_key = '${userId}/${fileNameOriginal}';`
+        try {
+            await db_exec.execute(query);
+            res.status(200).json({ mensaje : "Archivo actualizado." });
+        } catch (err) {
+            console.log(err)
+            res.status(400).json({ err : `Falló la actualización del archivo.` });
+        }
+        return;
+    }
+
+    let existeArchivoEnDb = false;
+    let existíaAntes = true;
+    // Se verifica si el usuario tiene un archivo con ese nombre
+    const keyAnterior = userId + "/" + fileNameOriginal;
+    query = `
+        SELECT * FROM archivo
+        WHERE (
+            s3_key = '${keyAnterior}' AND
+            usuario = ${userId}
+        );
+    `;
+
+    try {
+        outcome = await db_exec.execute(query);
+    } catch(err) {
+        return {err};
+    };
+    if (outcome.result.length === 1) { existeArchivoEnDb = true };
+
+    // Se verifica si el usuario no tenía un archivo con ese nombre.
+    const keyNueva = userId + "/" + fileNameDestino;
+    query = `
+        SELECT * FROM archivo
+        WHERE (
+            s3_key = '${keyNueva}' AND
+            usuario = ${userId}
+        );
+    `;
+
+    try {
+        outcome = await db_exec.execute(query);
+    } catch(err) {
+        return {err};
+    };
+    if (outcome.result.length === 0) { existíaAntes = false };
+
+
+    // Se guarda en la base de datos si es verdad qué existeArchivoEnDb && !existíaAntes.
+    if (existeArchivoEnDb && !existíaAntes) {
+        query = `
+            UPDATE archivo
+            SET
+                s3_key = '${keyNueva}',
+                visibilidad = b'${visibilidad}'
+            WHERE
+                usuario = ${userId} AND s3_key = '${keyAnterior}';
+        `;
+
+        try {
+            outcome = await db_exec.execute(query);
+        } catch(err) {
+            res.status(400).json({err});
+            return;
+        };
+
+    } else {
+        res.status(400).json({ err : "Error al actualizar el archivo, revisar los parámetros." });
+        return;
+    }
+
+    copiarObjeto(userId, fileNameOriginal, fileNameDestino);
+    removeFromBucket(userId, fileNameOriginal);
+    res.status(200).json({ mensaje : "Archivo actualizado." });
+};
+
 module.exports = {
     subirArchivo,
+    editarArchivo,
     borrarArchivo
 };
