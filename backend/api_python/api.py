@@ -273,6 +273,90 @@ def deleteArchivo():
     s3_object.delete()
     return {'msg': 'File errased.'}, 200
 
+@app.route('/archivos/editarArchivo', methods=['PUT'])
+def editarArchivo():
+    userId = request.json['userId']
+    password = request.json['password']
+    fileNameOriginal = request.json['fileNameOriginal']
+    fileNameDestino = request.json.get('fileNameDestino')
+    visibilidad = request.json['visibilidad']
+
+    if visibilidad != 1 and visibilidad != 0:
+        return { err : "El valor de visibilidad debe ser solamente los números 0 o 1." }, 400
+
+
+    # get paswword from de db
+    query = f"SELECT contrasenia AS encrypt_password FROM usuario WHERE id = {userId};  COMMIT;"
+    cur = mysql.connection.cursor()
+    cur.execute(query)
+    outcome = cur.fetchone()
+    if outcome is None:
+        return {"err": f"No existe algun usuario con el id = {userId}."}, 400
+
+    # Si la contrasñea ingresada no es igual a la encriptada de la db
+    dbEncryptedPassword = outcome[0]
+    if (not comparar(password, dbEncryptedPassword)):
+        return {"err": "La contrseña ingresada es incorrecta."}, 400
+
+    # Si fileNameDestino es vacío o nulo solo modificar la visibilidad en la base de datos
+    if fileNameDestino == None or fileNameDestino == "":
+        query = f'''UPDATE archivo SET visibilidad = b'{visibilidad}' WHERE usuario = {userId} AND
+                                                                            s3_key = '{userId}/{fileNameOriginal}'; COMMIT;'''
+        try:
+            cur.execute(query)
+        except Exception as err:
+            return {"err": str(err)}, 400
+        print(query)
+        return {"mensaje": "Archivo actualizado."}, 200
+
+    existe_archivo_en_db = False
+    existía_antes = True
+    # Se verifica si el usuario ya tenia un archivo con ese nombre
+    key_anterior = userId + "/" + fileNameOriginal
+    query = f'''
+        SELECT * FROM archivo
+        WHERE (
+            s3_key = '{key_anterior}' AND
+            usuario = {userId}
+        );
+        COMMIT;
+    '''
+    cur.execute(query)
+    outcome = cur.fetchone()
+    if (outcome is not None):
+        existe_archivo_en_db = True
+    # Se verifica que no haya un archivo del usuario de nombre fileNameDestino
+    key_nueva = userId + "/" + fileNameDestino;
+    query = f'''
+        SELECT * FROM archivo
+        WHERE
+            s3_key = '{key_nueva}' AND
+            usuario = {userId};'''
+    cur.execute(query)
+    outcome = cur.fetchone()
+    if outcome is None:
+        existía_antes = False
+
+    if existe_archivo_en_db and not existía_antes:
+        query = f'''
+            UPDATE archivo
+            SET
+                s3_key = '{key_nueva}',
+                visibilidad = b'{visibilidad}'
+            WHERE
+                usuario = {userId} AND s3_key = '{key_anterior}'; COMMIT;'''
+        try:
+            cur.execute(query)
+        except Exception as err:
+            return {"err": str(err)}, 400
+    else:
+        return {"err": "Error al actualizar el archivo, revisar los parámetros."}, 400
+
+    key_origen_completa = bucket + "/" + key_anterior
+    key_origen_completa = bucket + "/" + "1/pruebaACTUALIZADO2VECES.pdf"
+    s3.meta.client.copy_object(Bucket=bucket, CopySource=key_origen_completa, Key=key_nueva)
+    return {"msg": "Archivo actualizado."}, 200
+
 @app.route('/amigos/personas-disponibles', methods=['GET'])
 def PersonasDisponibles():
     if request.method == 'GET':
