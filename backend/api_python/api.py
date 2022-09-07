@@ -358,9 +358,9 @@ def editarArchivo():
     s3_object.delete()
     return {"msg": "Archivo actualizado."}, 200
 
-@app.route('/amigos/personas-disponibles', methods=['GET'])
+@app.route('/amigos/personas-disponibles', methods=['POST'])
 def PersonasDisponibles():
-    if request.method == 'GET':
+    if request.method == 'POST':
 
         userId = request.json['userId']
 
