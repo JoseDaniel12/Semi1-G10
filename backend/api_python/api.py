@@ -353,8 +353,9 @@ def editarArchivo():
         return {"err": "Error al actualizar el archivo, revisar los parámetros."}, 400
 
     key_origen_completa = bucket + "/" + key_anterior
-    key_origen_completa = bucket + "/" + "1/pruebaACTUALIZADO2VECES.pdf"
     s3.meta.client.copy_object(Bucket=bucket, CopySource=key_origen_completa, Key=key_nueva)
+    s3_object = s3.Object(bucket, key_anterior)
+    s3_object.delete()
     return {"msg": "Archivo actualizado."}, 200
 
 @app.route('/amigos/personas-disponibles', methods=['GET'])
