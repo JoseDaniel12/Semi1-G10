@@ -277,7 +277,7 @@ def deleteArchivo():
 def PersonasDisponibles():
     if request.method == 'GET':
 
-        userId = request.form['userId']
+        userId = request.json['userId']
 
         try:
             cur = mysql.connection.cursor()
@@ -310,8 +310,23 @@ def PersonasDisponibles():
                 }
                 personas_disponibles.append(pers)
             return personas_disponibles, 200
-        except:
-            return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
+        except BaseException as err:
+            return {'caso': 3, 'mensaje': str(err)}, 400
+
+@app.route('/amigos/agregar-amistad', methods=['POST'])
+def AgregarAmistad():
+    if request.method == 'POST':
+
+        userIdA = request.json['userIdA']
+        userIdB = request.json['userIdB']
+
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute(f"INSERT INTO amistad (usuario1, usuario2) VALUES ({userIdA}, {userIdB}); COMMIT;")
+            cur.execute(f"INSERT INTO amistad (usuario2, usuario1) VALUES ({userIdA}, {userIdB}); COMMIT;")
+            return { 'mensaje' : '¡Somos amigos! :D' }, 200
+        except BaseException as err:
+            return {'caso': 3, 'mensaje': str(err)}, 400
 
 
 if __name__ == '__main__':
