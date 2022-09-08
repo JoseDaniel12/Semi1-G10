@@ -5,44 +5,34 @@ import SearchIcon from '@mui/icons-material/Search';
 import { FileCard } from "../components/FileCard";
 import { useStorageStore } from "../../../hooks/useStorageStore";
 import { useEffect } from "react";
+import { useState } from "react";
 
 export const VerArchivos = () => {
 
-    const { startPersonasDisponibles } = useStorageStore();
+    const [archivosAmigos, setArchivosAmigos] = useState([]);
+    const { startArchivosAmigos } = useStorageStore();
 
     useEffect(() => {
-        startPersonasDisponibles();
-    }, [])
-    
+        startArchivosAmigos().then((data) => setArchivosAmigos(data));
+    }, []);
+
+    useEffect(() => {
+        console.log(archivosAmigos);
+    }, [archivosAmigos]);
+
     return (
         <>  
-            <Paper
-                component="form"
-                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-                >
-                <IconButton sx={{ p: '10px' }} aria-label="menu">
-                    <PlagiarismIcon />
-                </IconButton>
-                <InputBase
-                    sx={{ ml: 1, flex: 1 }}
-                    placeholder="Buscar archivos"
-                />
-                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                    <SearchIcon />
-                </IconButton>
-            </Paper>
-
-            {/* <Grid container sx={{ mt: 2 }}>
-                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }}>
-                    <FileCard />
-                </Grid>
-                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }}>
-                    <FileCard />
-                </Grid>
-                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }}>
-                    <FileCard />
-                </Grid>
-            </Grid> */}
+            <Grid container sx={{ mt: 2 }}>
+                {
+                    archivosAmigos.map(archivo => 
+                        (
+                            <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }} key={archivo.usuario + archivo.fecha}>
+                                {<FileCard archivo={archivo} idSbs={(archivo.usuario.toString()+"/").length} autor={""} />}
+                            </Grid>
+                        )
+                    )
+                }
+            </Grid>
         </>
     )
 }

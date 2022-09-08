@@ -65,24 +65,22 @@ export const useStorageStore = () => {
 
     const startEditarArchivo = async({archivo, password, nombre, tipo}) => {
         try {
-            let formData = new FormData();
-            formData.append("userId", user.id);
-            formData.append("password", password);
-            formData.append("fileNameOriginal", archivo);
-            formData.append("fileNameDestino", nombre);
-            formData.append("visibilidad", parseInt(tipo));
+            const body = {
+                userId: user.id,
+                password,
+                fileNameOriginal: archivo,
+                fileNameDestino: nombre,
+                visibilidad: parseInt(tipo)
+            }
 
-            console.log(archivo, password, tipo, nombre)
-
-            // const config = { headers: { 'content-type': 'multipart/form-data' } }
-            // const { data } = await storageApi.put("archivos/editarArchivo", formData, config);
+            const { data } = await storageApi.put("archivos/editarArchivo", body);
             
-            // Swal.fire({
-            //     icon: 'success',
-            //     title: 'Archivo editado',
-            //     confirmButtonColor: '#006064',
-            // });
-            // startChange(activityTypes.misArchivos);
+            Swal.fire({
+                icon: 'success',
+                title: 'Archivo editado',
+                confirmButtonColor: '#006064',
+            });
+            startChange(activityTypes.misArchivos);
 
         } catch (error) {
             Swal.fire({
@@ -93,7 +91,6 @@ export const useStorageStore = () => {
             });
         }
     }
-
 
     const startArchivosUsuario = async() => {
         try {
@@ -110,13 +107,42 @@ export const useStorageStore = () => {
         }
     }
 
-    const startPersonasDisponibles = async() => {
+    const startArchivosAmigos = async() => {
         try {
-            const { data } = await storageApi.get('amigos/personas-disponibles', { params: { userId: user.id } });
-            console.log(data);
-
+            const body = { "userId": user.id };
+            const { data } = await storageApi.post('archivosAmigos', body);
+            return data.archivos;
+            
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const startPersonasDisponibles = async() => {
+        try {
+            const { data } = await storageApi.post('amigos/personas-disponibles', { userId: user.id });
+            return data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const startAgregarPersona = async({agregarUserID}) => {
+        try {
+            await storageApi.post('amigos/agregar-amistad', { userIdA: user.id, userIdB: agregarUserID });
+            Swal.fire({
+                icon: 'success',
+                title: 'Amigo agregado',
+                confirmButtonColor: '#006064',
+            });
+
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al agregar amigo',
+                text: 'Intentalo de nuevo',
+                confirmButtonColor: '#006064',
+            });
         }
     }
 
@@ -129,5 +155,7 @@ export const useStorageStore = () => {
         startArchivosUsuario,
         startPersonasDisponibles,
         startEditarArchivo,
+        startAgregarPersona,
+        startArchivosAmigos,
     }
 }
