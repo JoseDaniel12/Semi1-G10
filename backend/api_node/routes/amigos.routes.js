@@ -4,7 +4,7 @@ const {verifyFile} = require('../middlewares/verifyFiles.js')
 
 const router = express.Router();
 
-router.get('/personas-disponibles', amigos.personasDisponibles);
+router.post('/personas-disponibles', amigos.personasDisponibles);
 router.post('/agregar-amistad', amigos.agregarAmistad);
 
 module.exports = router;
