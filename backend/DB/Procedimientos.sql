@@ -64,10 +64,12 @@ CREATE PROCEDURE ArchivosAmigos (
 	IN in_id_usuario INT
 )
 BEGIN
-	SELECT ar.usuario, ar.s3_key, CAST(ar.visibilidad AS SIGNED) AS visibilidad, 
+	SELECT u.nombre_usuario, ar.usuario, ar.s3_key, CAST(ar.visibilidad AS SIGNED) AS visibilidad, 
 	DATE_FORMAT(ar.fecha, "%d-%m-%Y %H:%i:%s") as fecha FROM archivo ar
 	INNER JOIN amistad am
 	ON ar.usuario = am.usuario2
+	INNER JOIN usuario u
+	ON ar.usuario = u.id
 	WHERE (am.usuario1 = in_id_usuario) AND ar.visibilidad = 1;
 END;
 
@@ -75,3 +77,4 @@ CALL ArchivosAmigos(2);
 CALL ArchivosAmigos(1);
 SELECT * FROM archivo;
 SELECT * FROM amistad;
+SELECT * FROM usuario;
