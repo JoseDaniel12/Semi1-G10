@@ -1,14 +1,26 @@
 import { Alert, Button, Card, Divider, CardContent, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, Typography, Box, IconButton, CardMedia, CardActions, InputLabel, Select, MenuItem } from "@mui/material"
 import { useForm } from "react-hook-form";
 import FolderDeleteIcon from '@mui/icons-material/FolderDelete';
+import { useStorageStore } from "../../../hooks/useStorageStore";
+import { useAuthStore } from "../../../hooks/useAuthStore";
+import { useEffect } from "react";
 
 export const EditarArchivo = () => {
 
     const { register, handleSubmit, formState: {errors} } = useForm()
+    const { user } = useAuthStore();
+    const { privados, publicos, startArchivosUsuario, startEditarArchivo } = useStorageStore();
+    
+    useEffect(() => {
+        startArchivosUsuario();
+    }, [])
 
     const handleNuevo = (data) => {
-        console.log(data)
-        console.log(data.archivo)
+        startEditarArchivo(data);
+    }
+
+    const substringNombre = (valor) => {
+        return valor.substring((user.id.toString() + "/").length, valor.length)
     }
 
     return (
@@ -25,9 +37,16 @@ export const EditarArchivo = () => {
                             label="Seleccionar archivo"
                             { ...register("archivo", { required: true }) }
                         >
-                            <MenuItem value={10}>10</MenuItem>
-                            <MenuItem value={20}>20</MenuItem>
-                            <MenuItem value={30}>30</MenuItem>
+                            {
+                                publicos.map(archivo => (
+                                    <MenuItem key={archivo} value={substringNombre(archivo.s3_key)}>{substringNombre(archivo.s3_key)}</MenuItem>
+                                ))
+                            }
+                            {
+                                privados.map(archivo => (
+                                    <MenuItem key={archivo} value={substringNombre(archivo.s3_key)}>{substringNombre(archivo.s3_key)}</MenuItem>
+                                ))
+                            }
                         </Select>
                     </FormControl>
                     {errors.archivo && <Alert severity="error">Archivo <strong>requerido</strong></Alert>}
@@ -47,11 +66,11 @@ export const EditarArchivo = () => {
                         <FormLabel>Tipo</FormLabel>
                         <RadioGroup row
                             aria-labelledby="demo-row-radio-buttons-group-label"
-                            defaultValue="publico"
+                            defaultValue="1"
                             { ...register("tipo") }
                             >
-                            <FormControlLabel { ...register("tipo") } value="publico" control={<Radio />} label="Publico" />
-                            <FormControlLabel { ...register("tipo") } value="privado" control={<Radio />} label="Privado" />
+                            <FormControlLabel { ...register("tipo") } value="1" control={<Radio />} label="Publico" />
+                            <FormControlLabel { ...register("tipo") } value="0" control={<Radio />} label="Privado" />
                         </RadioGroup>
                     </FormControl>
                     <br/>

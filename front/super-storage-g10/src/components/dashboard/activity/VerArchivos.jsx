@@ -3,9 +3,17 @@ import PlagiarismIcon from '@mui/icons-material/Plagiarism';
 import SearchIcon from '@mui/icons-material/Search';
 
 import { FileCard } from "../components/FileCard";
+import { useStorageStore } from "../../../hooks/useStorageStore";
+import { useEffect } from "react";
 
 export const VerArchivos = () => {
 
+    const { startPersonasDisponibles } = useStorageStore();
+
+    useEffect(() => {
+        startPersonasDisponibles();
+    }, [])
+    
     return (
         <>  
             <Paper
@@ -24,7 +32,7 @@ export const VerArchivos = () => {
                 </IconButton>
             </Paper>
 
-            <Grid container sx={{ mt: 2 }}>
+            {/* <Grid container sx={{ mt: 2 }}>
                 <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }}>
                     <FileCard />
                 </Grid>
@@ -34,7 +42,7 @@ export const VerArchivos = () => {
                 <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }}>
                     <FileCard />
                 </Grid>
-            </Grid>
+            </Grid> */}
         </>
     )
 }

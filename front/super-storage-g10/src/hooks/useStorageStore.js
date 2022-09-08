@@ -63,6 +63,38 @@ export const useStorageStore = () => {
         }
     }
 
+    const startEditarArchivo = async({archivo, password, nombre, tipo}) => {
+        try {
+            let formData = new FormData();
+            formData.append("userId", user.id);
+            formData.append("password", password);
+            formData.append("fileNameOriginal", archivo);
+            formData.append("fileNameDestino", nombre);
+            formData.append("visibilidad", parseInt(tipo));
+
+            console.log(archivo, password, tipo, nombre)
+
+            // const config = { headers: { 'content-type': 'multipart/form-data' } }
+            // const { data } = await storageApi.put("archivos/editarArchivo", formData, config);
+            
+            // Swal.fire({
+            //     icon: 'success',
+            //     title: 'Archivo editado',
+            //     confirmButtonColor: '#006064',
+            // });
+            // startChange(activityTypes.misArchivos);
+
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al editar el archivo',
+                text: 'Contraseña incorrecta',
+                confirmButtonColor: '#006064',
+            });
+        }
+    }
+
+
     const startArchivosUsuario = async() => {
         try {
             const body = { "userId": user.id };
@@ -78,6 +110,16 @@ export const useStorageStore = () => {
         }
     }
 
+    const startPersonasDisponibles = async() => {
+        try {
+            const { data } = await storageApi.get('amigos/personas-disponibles', { params: { userId: user.id } });
+            console.log(data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return {
         publicos,
         privados,
@@ -85,5 +127,7 @@ export const useStorageStore = () => {
         startSubirArchivo,
         startBorrarArchivo,
         startArchivosUsuario,
+        startPersonasDisponibles,
+        startEditarArchivo,
     }
 }
