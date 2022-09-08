@@ -160,10 +160,11 @@ def ArchivosAmigos():
                 for archivo in archivos:
                     print("archivo: ", archivo)
                     file = {
-                        'usuario': archivo[0],
-                        's3_key': archivo[1],
-                        'visibilidad': archivo[2],
-                        'fecha': archivo[3]
+                        'nombre_usuario': archivo[0],
+                        'usuario': archivo[1],
+                        's3_key': archivo[2],
+                        'visibilidad': archivo[3],
+                        'fecha': archivo[4]
                     }
                     files.append(file)
                 return {"archivos": files}, 200
