@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var mysql = require('mysql');
 
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: './.env' });
 
 const cors = require('cors');
 const encriptacion = require("./encriptacion");
