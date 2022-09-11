@@ -43,7 +43,17 @@
 * Terminus VM - Node: dentro de esta imagen se puede apreciar como se crear un archivo de docker compose dentro de la VM - Node el cual levanta un contendor que corre la aplicacion utilizando la imagen de node.
 ![tecnico](./imgs/terminus-vm-node.jpg)
 
+* RDS - MySQL: en esta imagen se pueden ver las configuraciones aplicadas para la base de datos en MySQL con el servicio de RDS.
+![tecnico](./imgs/rds.PNG)
+
+* RDS - Modelo entidad relación: en esta imagen se puede ver el modelo entidad relación utilizado para la base de datos.
+![tecnico](./imgs/modelo-er.png)
 
 
 ## Conclusiones
-[colocar contenido]
+- Las tecnologías utilizadas para el desarrollo de la aplicación ayudaron a que el proceso fuese más rápido, seguro y fácil.
+- La arquitectura presentada muestra el funcionamiento integral de diferentes servicios en la nube.
+- La integración de los servicios de AWS fue especificada y realizada de manera correcta.
+- Las tecnologías de la nube fueron aplicadas a un entorno real y funcional.
+- Los usuarios de IAM fueron asociados a las políticas correspondientes para el desarrollo e implementación de distintos servicios en la nube.
+
