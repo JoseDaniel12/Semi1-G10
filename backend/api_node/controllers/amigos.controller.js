@@ -23,6 +23,7 @@ SELECT noamigos.id, noamigos.nombre_usuario, noamigos.formatofoto, noamigos.arch
         relación_resultante = await db_exec.execute(query);
     } catch(err) {
         res.status(400).json(err);
+        return;
     };
 
     const resultado = relación_resultante.result;
