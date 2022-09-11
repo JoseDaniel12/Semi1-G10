@@ -49,6 +49,18 @@
 * RDS - Modelo entidad relación: en esta imagen se puede ver el modelo entidad relación utilizado para la base de datos.
 ![tecnico](./imgs/modelo-er.png)
 
+* Balanceador de carga: Se utilizo el grupo de destinos que fue creado donde se apuntaban a las dos instancias de la api. 
+![tecnico](./imgs/balanceador.png)
+
+* Pagina web: En S3 se creo un bucket publico, donde se colocaron los archivos resultantes de react build. Se activo el alojamiento de sitio web estatico y se actualizo la politica. 
+
+![tecnico](./imgs/appweb1.png)
+
+![tecnico](./imgs/appweb2.png)
+
+![tecnico](./imgs/appweb3.png)
+
+![tecnico](./imgs/appweb4.png)
 
 ## Conclusiones
 - Las tecnologías utilizadas para el desarrollo de la aplicación ayudaron a que el proceso fuese más rápido, seguro y fácil.
