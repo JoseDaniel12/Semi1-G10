@@ -5,6 +5,7 @@ import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import { useStorageStore } from "../../../hooks/useStorageStore";
 import { useEffect } from "react";
 import { useState } from "react";
+import { NoFiles } from "../components/NoFiles";
 
 export const AgregarAmigo = () => {
 
@@ -27,11 +28,15 @@ export const AgregarAmigo = () => {
         <>
             <Grid container sx={{ mt: 2 }} alignItems="center" justifyContent="center">
                 {
-                    personas.map(persona => (
-                        <Grid item xs={10} md={6} lg={4} sx={{ p: 2 }} key={persona.id}>
-                            <UserCard persona={persona} agregarAmigo={agregarAmigo} />
-                        </Grid>
-                    ))
+                    (personas.length > 0) 
+                    ? (
+                        personas.map(persona => (
+                            <Grid item xs={10} md={6} lg={4} sx={{ p: 2 }} key={persona.id}>
+                                <UserCard persona={persona} agregarAmigo={agregarAmigo} />
+                            </Grid>
+                        ))
+                    )
+                    : <NoFiles message="No hay personas disponibles para agregar." />
                 }
             </Grid>
         </>

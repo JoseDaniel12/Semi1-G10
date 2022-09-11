@@ -4,10 +4,13 @@ import FolderDeleteIcon from '@mui/icons-material/FolderDelete';
 import { useStorageStore } from "../../../hooks/useStorageStore";
 import { useEffect } from "react";
 import { useAuthStore } from "../../../hooks/useAuthStore";
+import { useActivityStore } from "../../../hooks/useActivityStore";
+import { activityTypes } from "../../../types/activityTypes";
 
 export const EliminarArchivo = () => {
 
     const { register, handleSubmit, formState: {errors} } = useForm();
+    const { startChange } = useActivityStore();
     const { user } = useAuthStore();
     const { privados, publicos, startArchivosUsuario, startBorrarArchivo } = useStorageStore();
     
@@ -60,7 +63,7 @@ export const EliminarArchivo = () => {
                         {errors.password && <Alert severity="error">Contraseña <strong>requerida</strong></Alert>}
 
                     <br/><br/>
-                    <Button variant="contained" sx={{ mr: 2 }}>Cancelar</Button>
+                    <Button onClick={() => startChange(activityTypes.misArchivos)} variant="contained" sx={{ mr: 2 }}>Cancelar</Button>
                     <Button type="submit"  variant="contained">Eliminar</Button>
                 </Grid>
             </Grid>

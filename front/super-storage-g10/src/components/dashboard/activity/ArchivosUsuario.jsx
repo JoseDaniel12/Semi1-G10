@@ -8,6 +8,7 @@ import { useAuthStore } from "../../../hooks/useAuthStore";
 import { useEffect } from "react";
 import { useStorageStore } from "../../../hooks/useStorageStore";
 import { useActivityStore } from "../../../hooks/useActivityStore";
+import { NoFiles } from "../components/NoFiles";
 
 export const ArchivosUsuario = () => {
 
@@ -37,26 +38,32 @@ export const ArchivosUsuario = () => {
             <TabPanel value={value} index={0}>
                 <Grid container>
                     {
-                        publicos.map(archivo => 
+                        (publicos.length > 0)
+                        ? (
+                            publicos.map(archivo => 
                             (
                                 <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }} key={archivo}>
                                     <FileCard archivo={archivo} idSbs={contSubstring} autor={user.nombre_usuario} />
                                 </Grid>
-                            )
+                            ))
                         )
+                        : <NoFiles message="No hay archivos publicos." />
                     }
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={1}>
                 <Grid container>
                     {
-                        privados.map(archivo => 
+                        (privados.length > 0)
+                        ? (
+                            privados.map(archivo => 
                             (
                                 <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }} key={archivo}>
                                     <FileCard archivo={archivo} idSbs={contSubstring} autor={user.nombre_usuario} />
                                 </Grid>
-                            )
+                            ))
                         )
+                        : <NoFiles message="No hay archivos privados." />
                     }
                 </Grid>
             </TabPanel>

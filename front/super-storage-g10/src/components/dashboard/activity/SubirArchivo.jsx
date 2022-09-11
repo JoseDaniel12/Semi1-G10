@@ -4,11 +4,14 @@ import { useState } from "react";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import { useStorageStore } from "../../../hooks/useStorageStore";
+import { useActivityStore } from "../../../hooks/useActivityStore";
+import { activityTypes } from "../../../types/activityTypes";
 
 export const SubirArchivo = () => {
 
     const { register, handleSubmit, formState: {errors} } = useForm();
     const { startSubirArchivo } = useStorageStore();
+    const { startChange } = useActivityStore();
     
     const [previewFile, setPreviewFile] = useState('');
     const [url, setURL] = useState('');
@@ -106,7 +109,7 @@ export const SubirArchivo = () => {
                                         {errors.password && <Alert severity="error">Contraseña <strong>requerida</strong></Alert>}
                                 </CardContent>
                                 <CardActions>
-                                    <Button size="small">Cancelar</Button>
+                                    <Button onClick={() => startChange(activityTypes.misArchivos)} size="small">Cancelar</Button>
                                     <Button type="submit" size="small">Subir</Button>
                                 </CardActions>
                             </Card>

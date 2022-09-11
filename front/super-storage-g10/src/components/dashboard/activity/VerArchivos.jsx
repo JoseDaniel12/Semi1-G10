@@ -6,6 +6,7 @@ import { FileCard } from "../components/FileCard";
 import { useStorageStore } from "../../../hooks/useStorageStore";
 import { useEffect } from "react";
 import { useState } from "react";
+import { NoFiles } from "../components/NoFiles";
 
 export const VerArchivos = () => {
 
@@ -24,13 +25,17 @@ export const VerArchivos = () => {
         <>  
             <Grid container sx={{ mt: 2 }}>
                 {
-                    archivosAmigos.map(archivo => 
-                        (
-                            <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }} key={archivo.usuario + archivo.fecha}>
-                                {<FileCard archivo={archivo} idSbs={(archivo.usuario.toString()+"/").length} autor={archivo.nombre_usuario} />}
-                            </Grid>
+                    (archivosAmigos.length > 0) 
+                    ? (
+                        archivosAmigos.map(archivo => 
+                            (
+                                <Grid item xs={12} md={6} lg={4} sx={{ mb: 2, p: 2 }} key={archivo.usuario + archivo.fecha}>
+                                    {<FileCard archivo={archivo} idSbs={(archivo.usuario.toString()+"/").length} autor={archivo.nombre_usuario} />}
+                                </Grid>
+                            )
                         )
                     )
+                    : <NoFiles message="Tus amigos no tienen archivos publicos." />
                 }
             </Grid>
         </>
