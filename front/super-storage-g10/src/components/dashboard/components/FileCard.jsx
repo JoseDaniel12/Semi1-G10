@@ -1,8 +1,19 @@
 import { Box, Card, CardContent, CardMedia, IconButton, Tooltip, Typography } from "@mui/material"
 import FileOpenIcon from '@mui/icons-material/FileOpen';
+import { useEffect } from "react";
+import { useState } from "react";
+
 
 export const FileCard = ({ archivo, idSbs, autor }) => {
 
+    const [esImagen, setEsImagen] = useState(false);
+
+    useEffect(() => {
+        if (!archivo.s3_key.includes('pdf') && !archivo.s3_key.includes('txt')) {
+            setEsImagen(true);
+        }   
+    }, []);
+    
     return (
         <Card sx={{ display: 'flex' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -25,10 +36,11 @@ export const FileCard = ({ archivo, idSbs, autor }) => {
                     </Tooltip>
                 </Box>
             </Box>
+
             <CardMedia
                 component="img"
                 sx={{ width: 145 }}
-                image="http://127.0.0.1:5173/src/assets/img-doc.jpg"
+                image={esImagen ? `https://archivos-g10-p1.s3.amazonaws.com/${archivo.s3_key}` : "https://appweb-g10-p1.s3.amazonaws.com/assets/img-doc.jpg" } 
                 alt="Imagen archivo"
             />
         </Card>
