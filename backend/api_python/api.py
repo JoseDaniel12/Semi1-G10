@@ -8,6 +8,8 @@ import boto3
 
 
 app = Flask(__name__)
+print(os.environ.get('BASE_HOST'))
+print(os.environ.get('BASE_USER'))
 app.config['MYSQL_HOST'] = os.environ.get('BASE_HOST')
 app.config['MYSQL_USER'] = os.environ.get('BASE_USER')
 app.config['MYSQL_PASSWORD'] = os.environ.get('BASE_PASSWORD')
@@ -75,7 +77,7 @@ def Registrar():
                     "formatoFoto": mensaje[6]
                 }
 
-                key = "fotos/" + mensaje[2] + "." + extension
+                key = "fotos/" + str(mensaje[2]) + "." + extension
                 s3.Bucket(bucket).put_object(Key=key, Body=file, ContentType='image')
 
                 return usuario, mensaje[0]
@@ -89,8 +91,8 @@ def Registrar():
 def Login():
     if request.method == 'POST':
 
-        usuario_correo = request.form['usuario_correo']
-        contrasenia = request.form['contrasenia']
+        usuario_correo = request.json['usuario_correo']
+        contrasenia = request.json['contrasenia']
 
         try:
             cur = mysql.connection.cursor()
@@ -118,7 +120,7 @@ def Login():
 def AllFiles():
     if request.method == 'POST':
 
-        userId = request.form['userId']
+        userId = str(request.json['userId'])
 
         try:
             cur = mysql.connection.cursor()
@@ -139,7 +141,7 @@ def AllFiles():
                     files.append(file)
                 return {"archivos": files}, 200
             else:
-                return {'caso': 1, 'mensaje': 'correo o usuario no existe'}, 400
+                return {"archivos": []}, 200
         except:
             return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
 
@@ -147,7 +149,7 @@ def AllFiles():
 def ArchivosAmigos():
     if request.method == 'POST':
 
-        userId = request.form['userId']
+        userId = str(request.json['userId'])
 
         try:
             cur = mysql.connection.cursor()
@@ -169,8 +171,10 @@ def ArchivosAmigos():
                     files.append(file)
                 return {"archivos": files}, 200
             else:
-                return {'caso': 1, 'mensaje': 'correo o usuario no existe'}, 400
-        except:
+                print("NO EXISTE")
+                return {"archivos": []}, 200
+        except Exception as err:
+            print(str(err))
             return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
 
 
@@ -276,7 +280,7 @@ def deleteArchivo():
 
 @app.route('/archivos/editarArchivo', methods=['PUT'])
 def editarArchivo():
-    userId = request.json['userId']
+    userId = str(request.json['userId'])
     password = request.json['password']
     fileNameOriginal = request.json['fileNameOriginal']
     fileNameDestino = request.json.get('fileNameDestino')
@@ -313,7 +317,7 @@ def editarArchivo():
     existe_archivo_en_db = False
     existía_antes = True
     # Se verifica si el usuario ya tenia un archivo con ese nombre
-    key_anterior = userId + "/" + fileNameOriginal
+    key_anterior = str(userId) + "/" + fileNameOriginal
     query = f'''
         SELECT * FROM archivo
         WHERE (
