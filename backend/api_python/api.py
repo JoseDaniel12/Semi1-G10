@@ -75,7 +75,7 @@ def Registrar():
                     "formatoFoto": mensaje[6]
                 }
 
-                key = "fotos/" + mensaje[2] + "." + extension
+                key = "fotos/" + str(mensaje[2]) + "." + extension
                 s3.Bucket(bucket).put_object(Key=key, Body=file, ContentType='image')
 
                 return usuario, mensaje[0]
