@@ -46,9 +46,9 @@ def home():
 def Registrar():
     if request.method == 'POST':
 
-        usuario = request.json['usuario']
-        correo = request.json['correo']
-        contrasenia = encriptar(request.json['contrasenia'])
+        usuario = request.form['usuario']
+        correo = request.form['correo']
+        contrasenia = encriptar(request.form['contrasenia'])
 
         file = request.files['foto']
         if file.filename == '':
@@ -182,10 +182,10 @@ def allowed_file(filename):
 
 @app.route('/archivos/subirArchivo', methods=['POST'])
 def subirArchivo():
-    userId = request.json['userId']
-    password = request.json['password']
-    fileName = request.json['fileName']
-    visibility = request.json['visibility']
+    userId = request.form['userId']
+    password = request.form['password']
+    fileName = request.form['fileName']
+    visibility = request.form['visibility']
 
     if 'file' not in request.files:
         return {'err': 'File not uploaded.'}, 400
