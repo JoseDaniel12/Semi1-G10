@@ -120,7 +120,7 @@ def Login():
 def AllFiles():
     if request.method == 'POST':
 
-        userId = request.json['userId']
+        userId = str(request.json['userId'])
 
         try:
             cur = mysql.connection.cursor()
@@ -149,7 +149,7 @@ def AllFiles():
 def ArchivosAmigos():
     if request.method == 'POST':
 
-        userId = request.json['userId']
+        userId = str(request.json['userId'])
 
         try:
             cur = mysql.connection.cursor()
