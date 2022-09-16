@@ -13,7 +13,7 @@ export const AgregarAmigo = () => {
     const { startPersonasDisponibles, startAgregarPersona } = useStorageStore();
 
     const verPersonasDisponibles = () => {
-        startPersonasDisponibles().then(data => setPersonas(data));
+        startPersonasDisponibles().then(data => setPersonas(data)).catch(() => setPersonas([]));
     }
 
     useEffect(() => {
