@@ -8,6 +8,8 @@ import boto3
 
 
 app = Flask(__name__)
+print(os.environ.get('BASE_HOST'))
+print(os.environ.get('BASE_USER'))
 app.config['MYSQL_HOST'] = os.environ.get('BASE_HOST')
 app.config['MYSQL_USER'] = os.environ.get('BASE_USER')
 app.config['MYSQL_PASSWORD'] = os.environ.get('BASE_PASSWORD')
@@ -44,9 +46,9 @@ def home():
 def Registrar():
     if request.method == 'POST':
 
-        usuario = request.form['usuario']
-        correo = request.form['correo']
-        contrasenia = encriptar(request.form['contrasenia'])
+        usuario = request.json['usuario']
+        correo = request.json['correo']
+        contrasenia = encriptar(request.json['contrasenia'])
 
         file = request.files['foto']
         if file.filename == '':
@@ -89,8 +91,8 @@ def Registrar():
 def Login():
     if request.method == 'POST':
 
-        usuario_correo = request.form['usuario_correo']
-        contrasenia = request.form['contrasenia']
+        usuario_correo = request.json['usuario_correo']
+        contrasenia = request.json['contrasenia']
 
         try:
             cur = mysql.connection.cursor()
@@ -118,7 +120,7 @@ def Login():
 def AllFiles():
     if request.method == 'POST':
 
-        userId = request.form['userId']
+        userId = request.json['userId']
 
         try:
             cur = mysql.connection.cursor()
@@ -147,7 +149,7 @@ def AllFiles():
 def ArchivosAmigos():
     if request.method == 'POST':
 
-        userId = request.form['userId']
+        userId = request.json['userId']
 
         try:
             cur = mysql.connection.cursor()
@@ -180,10 +182,10 @@ def allowed_file(filename):
 
 @app.route('/archivos/subirArchivo', methods=['POST'])
 def subirArchivo():
-    userId = request.form['userId']
-    password = request.form['password']
-    fileName = request.form['fileName']
-    visibility = request.form['visibility']
+    userId = request.json['userId']
+    password = request.json['password']
+    fileName = request.json['fileName']
+    visibility = request.json['visibility']
 
     if 'file' not in request.files:
         return {'err': 'File not uploaded.'}, 400
