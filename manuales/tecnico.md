@@ -20,7 +20,7 @@ Para este se contempla una configuración que permita al sistema ser resiliente 
 
 Las máquinas virtuales y los servicios que contienen se exponen de forma transparente, como un único servicio, a través de un balanceador de carga que además de esto, permite verificar constantemente el estado de los servicios para que la detección de fallas sea lo más inmediata posible.
 
-Los servicios en las máquinas virtuales se comunican de forma directa con los componentes del almacenamiento para modificar de alguna forma lo que éstos últimos contienen.
+Los servicios en las máquinas virtuales se comunican de forma directa con los componentes del almacenamiento para tener la capacidad de modificar de alguna forma lo que éstos últimos contienen.
 
 ### Almacenamiento
 
@@ -34,7 +34,7 @@ El almacenamiento de datos relevantes para el servicio es definido en dos partes
 
 El despliegue del frontend se realiza utilizando un bucket de S3 adicional. Dentro de este se colocan los archivos necesarios para que la interfaz web funcione correctamente.
 
-Este componente tiene comunicación directa con el balanceador de carga, hacia cuál dirige la totalidad de sus peticiones. El balanceador de carga se encarga solamente de redirigir las solicitudes a una de las máquinas virtuales según corresponda.
+Este componente tiene comunicación directa con el balanceador de carga, hacia el cuál dirige la totalidad de sus peticiones. El balanceador de carga se encarga solamente de redirigir las solicitudes a una de las máquinas virtuales según corresponda.
 
 ## Descripcion de los usuarios de IAM utilizado con sus distintos permisos
 
