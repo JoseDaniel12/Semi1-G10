@@ -278,7 +278,7 @@ def deleteArchivo():
 
 @app.route('/archivos/editarArchivo', methods=['PUT'])
 def editarArchivo():
-    userId = request.json['userId']
+    userId = str(request.json['userId'])
     password = request.json['password']
     fileNameOriginal = request.json['fileNameOriginal']
     fileNameDestino = request.json.get('fileNameDestino')
@@ -315,7 +315,7 @@ def editarArchivo():
     existe_archivo_en_db = False
     existía_antes = True
     # Se verifica si el usuario ya tenia un archivo con ese nombre
-    key_anterior = userId + "/" + fileNameOriginal
+    key_anterior = str(userId) + "/" + fileNameOriginal
     query = f'''
         SELECT * FROM archivo
         WHERE (
