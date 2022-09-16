@@ -172,7 +172,7 @@ def ArchivosAmigos():
                 return {"archivos": files}, 200
             else:
                 print("NO EXISTE")
-                return {'caso': 1, 'mensaje': 'correo o usuario no existe'}, 400
+                return {"archivos": []}, 200
         except Exception as err:
             print(str(err))
             return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
