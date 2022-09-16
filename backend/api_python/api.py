@@ -141,7 +141,7 @@ def AllFiles():
                     files.append(file)
                 return {"archivos": files}, 200
             else:
-                return {'caso': 1, 'mensaje': 'correo o usuario no existe'}, 400
+                return {"archivos": []}, 200
         except:
             return {'caso': 3, 'mensaje': 'error con base de datos'}, 400
 
