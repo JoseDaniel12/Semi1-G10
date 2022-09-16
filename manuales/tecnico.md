@@ -13,8 +13,28 @@
 
 
 ## Explicación de arquitectura del proyecto
-[colocar contenido]
+La arquitectura para Super Storage contempla detalles específicos para la implementación y despliegue de cada uno de los componentes del sistema.
 
+### Backend
+Para este se contempla una configuración que permita al sistema ser resiliente y redundante. Es por ello que se definen dos máquinas virtuales de EC2, ejecutando en ellas el mismo servicio HTTP.
+
+Las máquinas virtuales y los servicios que contienen se exponen de forma transparente, como un único servicio, a través de un balanceador de carga que además de esto, permite verificar constantemente el estado de los servicios para que la detección de fallas sea lo más inmediata posible.
+
+Los servicios en las máquinas virtuales se comunican de forma directa con los componentes del almacenamiento para modificar de alguna forma lo que éstos últimos contienen.
+
+### Almacenamiento
+
+El almacenamiento de datos relevantes para el servicio es definido en dos partes. La base de datos y el almacenamiento de objetos:
+
+- Base de datos: una instancia de RDS que ejecuta MySQL 8.0.28, esta es utilizada para guardar los datos de usuarios y algunos meta-datos necesarios para los archivos que se comparten dentro del servicio.
+
+- Almacenamiento de objetos: un bucket de S3 cuya función es almacenar los archivos que se requieran de los usuarios, así como también los que éstos dispongan subir a Super Storage.
+
+### Frontend
+
+El despliegue del frontend se realiza utilizando un bucket de S3 adicional. Dentro de este se colocan los archivos necesarios para que la interfaz web funcione correctamente.
+
+Este componente tiene comunicación directa con el balanceador de carga, hacia cuál dirige la totalidad de sus peticiones. El balanceador de carga se encarga solamente de redirigir las solicitudes a una de las máquinas virtuales según corresponda.
 
 ## Descripcion de los usuarios de IAM utilizado con sus distintos permisos
 
