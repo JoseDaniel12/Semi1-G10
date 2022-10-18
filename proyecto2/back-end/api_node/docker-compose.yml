@@ -1,0 +1,19 @@
+version: "3"
+services:
+  node_api:
+    build: ./
+    ports:
+      - "9000:9000"
+    environment:
+      - BASE_HOST = mysql-semi1.c0in2h7l70ve.us-east-2.rds.amazonaws.com
+      - BASE_USER = admin
+      - BASE_PASSWORD = 123456789
+      - BASE_NOMBRE = semi1_grupo10
+      - DB_PORT = 3306
+      - NODE_PUERTO = 7000
+      - PYTHON_PUERTO = 5000
+
+
+      - AWS_REGION = us-east-1
+      - AWS_ACCES_KEY = AKIA3ABCXNCJICJJ4JGS
+      - AWS_SECRET_KEY = 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

@@ -1,7 +1,9 @@
-import { Alert, TextField, Button, Grid } from "@mui/material";
+import { Alert, TextField, Button, Grid, Typography } from "@mui/material";
 import { useAuthStore } from "../../../hooks/useAuthStore";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
+import {Buffer} from 'buffer';
+import Webcam from "react-webcam";
 
 export const RegisterForm = () => {
 
@@ -22,6 +24,23 @@ export const RegisterForm = () => {
     const showPhoto = (e) => {
         setPreviewFoto(URL.createObjectURL(e.target.files[0]))
     }
+
+    const videoConstraints = {
+        width: 320,
+        height: 320,
+        facingMode: "user"
+    };
+      
+    const webcamRef = useRef(null);
+    const [imgSrc, setImgSrc] = useState(null);
+
+    const tomarFoto = useCallback(() => {
+        const ss = webcamRef.current.getScreenshot();
+        const data = ss.toString().replace(/^data:image\/jpg;base64,/, "");
+        const buf = Buffer.from(data, 'base64');
+        console.log({base64: buf});
+        setImgSrc(webcamRef.current.getScreenshot());    
+    }, [webcamRef, setImgSrc])
 
     return (
         <form onSubmit={handleSubmit(handleRegister)} className="animate__animated animate__fadeIn">
@@ -73,6 +92,22 @@ export const RegisterForm = () => {
                             { ...register('foto', { required: true, onChange: showPhoto}) }
                             type="file" accept="image/png, image/jpeg, image/jpg" hidden  />
                     </Button>
+                    <Button variant="contained" component="label" sx={{ ml: 2, mb: 2 }}>
+                        Utilizar webcam
+                    </Button>
+                    <Webcam
+                        audio={false}
+                        height={320}
+                        width={320}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={videoConstraints}
+                        ref={webcamRef}
+                        />
+                    <Button variant="contained" component="label" sx={{ mb: 2, mt: -10 }} onClick={tomarFoto}>
+                        Tomar foto
+                    </Button>
+
+                    {imgSrc && <img src={imgSrc} />}
                     <br />
                     {(previewFoto !== "") && <img className="foto-perfil" src={previewFoto} width="150" height="150" /> }
                     {errors.foto && <Alert severity="error">Foto de perfil <strong>requerida</strong></Alert>}
