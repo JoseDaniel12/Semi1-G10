@@ -10,9 +10,11 @@ export const useAuthStore = () => {
 
     const startLogin = async({ usuario, password }) => {
         dispatch(onChecking());
-        dispatch(onLogin({id:1, nombre_usuario: 'Juan Perez', correo: 'juan@gmail.com'}))
-        /*try {
+
+        try {
             const { data } = await storageApi.post('login', { "usuario_correo": usuario, "contrasenia": password });
+            delete data.contraseña;
+
             localStorage.setItem('user', JSON.stringify(data));
             dispatch(onLogin(data));
         } catch (error) {
@@ -23,18 +25,20 @@ export const useAuthStore = () => {
                 confirmButtonColor: '#006064',
             });
             dispatch(onLogout());
-        }*/
+        }
     }
 
-    const startRegister = async({usuario, email, password, foto}) => {
+    const startRegister = async({nombre, usuario, email, password, foto, webcam}) => {
         dispatch(onChecking());
 
         try {
             let formData = new FormData();
+            formData.append("nombre", nombre);
             formData.append("usuario", usuario);
             formData.append("correo", email);
             formData.append("foto", foto[0]);
             formData.append("contrasenia", password);
+            formData.append("webcam", webcam);
 
             const config = { headers: { 'content-type': 'multipart/form-data' } }
             const { data } = await storageApi.post("registrar", formData, config);
@@ -48,7 +52,7 @@ export const useAuthStore = () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Registro incorrecto',
-                text: 'El usuario ya existe',
+                text: 'El usuario o correo ya existe',
                 confirmButtonColor: '#006064',
             });
             dispatch(onLogout());

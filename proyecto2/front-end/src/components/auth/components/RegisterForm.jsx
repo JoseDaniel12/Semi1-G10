@@ -1,4 +1,5 @@
-import { Alert, TextField, Button, Grid, Typography } from "@mui/material";
+import { Alert, TextField, Button, Grid, Typography, Fab } from "@mui/material";
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useAuthStore } from "../../../hooks/useAuthStore";
 import { useForm } from "react-hook-form";
 import { useState, useCallback, useRef } from "react";
@@ -9,38 +10,60 @@ export const RegisterForm = () => {
 
     const { startRegister } = useAuthStore();
     const { register, handleSubmit, formState: {errors} } = useForm();
+    const webcamRef = useRef(null);
     const [errorPwd, setErrorPwd] = useState(false);
+    const [errorFoto, setErrorFoto] = useState(false);
+    const [usarWebcam, setUsarWebcam] = useState(false);
     const [previewFoto, setPreviewFoto] = useState('');
 
-    const handleRegister = (data) => {
+    const handleRegister = async(data) => {
         const { password, password2 } = data;
 
         if (password !== password2 ) return setErrorPwd(true);
         else setErrorPwd(false);
 
+        if (previewFoto === '') return setErrorFoto(true);
+        else setErrorFoto(false);
+
+        if (data.foto.length == 0) {   
+            // const arr = previewFoto.split(','),
+            //     mime = arr[0].match(/:(.*?);/)[1],
+            //     bstr = atob(arr[1]), 
+            //     n = bstr.length, 
+            //     u8arr = new Uint8Array(n);
+
+            // while (n--) {
+            //     u8arr[n] = bstr.charCodeAt(n);
+            // }
+
+            const resImg = await fetch(previewFoto);
+            const blob = await resImg.blob();
+            
+            const imgData = new File([blob], "foto.jpeg", {type: 'image/jpeg'});
+            data.webcam = imgData;
+        }
+        
         startRegister(data);
     } 
 
     const showPhoto = (e) => {
-        setPreviewFoto(URL.createObjectURL(e.target.files[0]))
+        setPreviewFoto(URL.createObjectURL(e.target.files[0]));
     }
 
     const videoConstraints = {
-        width: 320,
-        height: 320,
+        width: 300,
+        height: 300,
         facingMode: "user"
     };
       
-    const webcamRef = useRef(null);
-    const [imgSrc, setImgSrc] = useState(null);
-
     const tomarFoto = useCallback(() => {
         const ss = webcamRef.current.getScreenshot();
         const data = ss.toString().replace(/^data:image\/jpg;base64,/, "");
         const buf = Buffer.from(data, 'base64');
         console.log({base64: buf});
-        setImgSrc(webcamRef.current.getScreenshot());    
-    }, [webcamRef, setImgSrc])
+        setPreviewFoto(webcamRef.current.getScreenshot());
+        setUsarWebcam(false);
+    }, [webcamRef]);
 
     return (
         <form onSubmit={handleSubmit(handleRegister)} className="animate__animated animate__fadeIn">
@@ -86,28 +109,32 @@ export const RegisterForm = () => {
                         {errors.password2 && <Alert severity="error">Confirmación <strong>requerida</strong></Alert>}
                 </Grid>
                 <Grid item xs={12} sx={{ mt: 2, mb: 2 }}>
-                    <Button variant="contained" component="label" sx={{ mb: 2 }}>
+                    <Button variant="outlined" component="label" sx={{ mb: 1 }}>
                         Subir foto
                         <input
-                            { ...register('foto', { required: true, onChange: showPhoto}) }
+                            { ...register('foto', { onChange: showPhoto}) }
                             type="file" accept="image/png, image/jpeg, image/jpg" hidden  />
                     </Button>
-                    <Button variant="contained" component="label" sx={{ ml: 2, mb: 2 }}>
-                        Utilizar webcam
-                    </Button>
-                    <Webcam
-                        audio={false}
-                        height={320}
-                        width={320}
-                        screenshotFormat="image/jpeg"
-                        videoConstraints={videoConstraints}
-                        ref={webcamRef}
-                        />
-                    <Button variant="contained" component="label" sx={{ mb: 2, mt: -10 }} onClick={tomarFoto}>
+                    <Button variant="outlined" component="label" sx={{ ml: 2, mb: 1 }} onClick={() => setUsarWebcam(!usarWebcam)}>
                         Tomar foto
                     </Button>
-
-                    {imgSrc && <img src={imgSrc} />}
+                    
+                    {usarWebcam && (
+                        <>
+                            <Webcam
+                                audio={false}
+                                height={300}
+                                width={300}
+                                screenshotFormat="image/jpeg"
+                                videoConstraints={videoConstraints}
+                                ref={webcamRef}
+                                />
+                            <Fab color="primary" aria-label="add" onClick={tomarFoto} sx={{ mb: 0, mt: -10 }}>
+                                <PhotoCamera  />
+                            </Fab>
+                        </>
+                    )}
+                    
                     <br />
                     {(previewFoto !== "") && <img className="foto-perfil" src={previewFoto} width="150" height="150" /> }
                     {errors.foto && <Alert severity="error">Foto de perfil <strong>requerida</strong></Alert>}
@@ -118,6 +145,9 @@ export const RegisterForm = () => {
                 <Grid item xs={12}>
                     {
                         (errorPwd) && <Alert severity="error">Las contraseñas <strong>no</strong> coinciden</Alert>
+                    }
+                    {
+                        (errorFoto) && <Alert severity="error">La foto es <strong>obligatoria</strong></Alert>
                     }
                     <Button variant="contained" type="submit" fullWidth>Registrar</Button>
                 </Grid>

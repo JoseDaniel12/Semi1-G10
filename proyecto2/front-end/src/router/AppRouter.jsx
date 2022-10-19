@@ -11,7 +11,7 @@ export const AppRouter = () => {
     const { status, startCheckAuth } = useAuthStore();
 
     useEffect(() => {
-       // startCheckAuth();
+        startCheckAuth();
     }, [])
     
     if (status == authTypes.checking) {

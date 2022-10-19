@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { authTypes } from '../../types/authTypes';
 
 const initialState = {
-    status: authTypes.notLogged,
+    status: authTypes.checking,
     user: {},
     error: null
 }
