@@ -36,26 +36,26 @@ app.use(fileUpload({
 
 
 app.post('/registrar', function (req, res) {
-        // var usuario = req.body.usuario;
-        // var correo = req.body.correo;
-        // var contrasenia = encriptacion.encriptar(req.body.contrasenia);
-        // const { foto } = req.files;
-        // var extensionFoto = foto.name.split(".")[1];
+        var nombre = req.body.nombre;
+        var usuario = req.body.usuario;
+        var correo = req.body.correo;
+        var contrasenia = encriptacion.encriptar(req.body.contrasenia);
+        const { foto, webcam } = req.files;
+        
+        var imgSubir = (foto !== undefined) ? foto : webcam;  
+        var extensionFoto = imgSubir.name.split(".")[1];
 
-        // var query = "CALL Registrar('" + usuario + "','" + correo + "','" + contrasenia + "','" + extensionFoto + "');";
-        // conexion.query(query, async function (err, result) {
-        //         if (err) {
-        //                 throw err;
-        //         } else {
-        //                 var resultado = result[0][0];
+        var query = `CALL Registrar('${nombre}', '${usuario}', '${correo}', '${contrasenia}', '${extensionFoto}')`;
 
-        //                 // guardar la foto de perfil
-        //                 const subirFoto = await uploadToBucket('fotos', foto, resultado.id);
-
-        //                 res.status(resultado.codigo).json(resultado);
-        //         }
-        // });
-        res.status(200).json({data: 'ok'});
+        conexion.query(query, async function (err, result) {
+                if (err) {
+                        throw err;
+                } else {
+                        var resultado = result[0][0];
+                        //const subirFoto = await uploadToBucket('fotos', foto, resultado.id);
+                        res.status(resultado.codigo).json(resultado);
+                }
+        });
 })
 
 app.post('/login', function (req, res) {
@@ -66,10 +66,10 @@ app.post('/login', function (req, res) {
         conexion.query(query, async function (err, result) {
                 if (err) {
                         throw err;
-                } else {
+                } else {      
                         var resultado = result[0][0];
                         if (resultado != undefined) {
-                                if (encriptacion.comparacion(contrasenia, resultado.contrasenia)) {
+                                if (encriptacion.comparacion(contrasenia, resultado.contraseña)) {
                                         res.status(200).json(resultado)
                                 } else {
                                         res.status(400).json({ caso: 2, mensaje: 'contrasenia incorrecta' })
