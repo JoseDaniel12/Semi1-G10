@@ -26,16 +26,6 @@ export const RegisterForm = () => {
         else setErrorFoto(false);
 
         if (data.foto.length == 0) {   
-            // const arr = previewFoto.split(','),
-            //     mime = arr[0].match(/:(.*?);/)[1],
-            //     bstr = atob(arr[1]), 
-            //     n = bstr.length, 
-            //     u8arr = new Uint8Array(n);
-
-            // while (n--) {
-            //     u8arr[n] = bstr.charCodeAt(n);
-            // }
-
             const resImg = await fetch(previewFoto);
             const blob = await resImg.blob();
             
@@ -94,15 +84,15 @@ export const RegisterForm = () => {
                 </Grid>
                 <Grid item xs={12} sx={{ mt: 2 }}>
                     <TextField 
-                        { ...register("password", { required: true }) }
+                        { ...register("password", { required: true, minLength: 6 }) }
                         label="Contraseña" variant="outlined" type="password" fullWidth
                         error={errors.password}
                         />
-                        {errors.password && <Alert severity="error">Contraseña <strong>requerida</strong></Alert>}
+                        {errors.password && <Alert severity="error">Contraseña <strong>requerida con 6 caracteres minimo</strong></Alert>}
                 </Grid>
                 <Grid item xs={12} sx={{ mt: 2 }}>
                     <TextField 
-                        { ...register("password2", { required: true }) }
+                        { ...register("password2", { required: true, minLength: 6 }) }
                         label="Confirmar contraseña" variant="outlined" type="password" fullWidth
                         error={errors.password}
                         />
@@ -110,7 +100,7 @@ export const RegisterForm = () => {
                 </Grid>
                 <Grid item xs={12} sx={{ mt: 2, mb: 2 }}>
                     <Button variant="outlined" component="label" sx={{ mb: 1 }}>
-                        Subir foto
+                        Subir imagen
                         <input
                             { ...register('foto', { onChange: showPhoto}) }
                             type="file" accept="image/png, image/jpeg, image/jpg" hidden  />

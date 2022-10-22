@@ -35,25 +35,36 @@ app.use(fileUpload({
 }));
 
 
+const AwsCognito = require('./aws/cognito');
+
 app.post('/registrar', function (req, res) {
         var nombre = req.body.nombre;
         var usuario = req.body.usuario;
         var correo = req.body.correo;
-        var contrasenia = encriptacion.encriptar(req.body.contrasenia);
+        var contrasenia = req.body.contrasenia;
         const { foto, webcam } = req.files;
         
         var imgSubir = (foto !== undefined) ? foto : webcam;  
         var extensionFoto = imgSubir.name.split(".")[1];
 
-        var query = `CALL Registrar('${nombre}', '${usuario}', '${correo}', '${contrasenia}', '${extensionFoto}')`;
-
-        conexion.query(query, async function (err, result) {
-                if (err) {
-                        throw err;
+        AwsCognito.initAWS();
+        AwsCognito.setCognitoAttributeList(nombre, correo, extensionFoto);
+        AwsCognito.getUserPool().signUp(usuario, contrasenia, AwsCognito.getCognitoAttributeList(), null, function(err, result){
+                if (err) {   
+                        res.status(422).json(err);
                 } else {
-                        var resultado = result[0][0];
-                        //const subirFoto = await uploadToBucket('fotos', foto, resultado.id);
-                        res.status(resultado.codigo).json(resultado);
+                        const resUser = {
+                                uid: result.userSub,
+                                username: result.user.username,
+                                email: correo,
+                                ext_foto: extensionFoto,
+                                name: nombre
+                        }
+                        // result.user.username
+                        // result.userSub
+                        // const subirFoto = await uploadToBucket('fotos', imgSubir, result.user.username);
+                        // console.log(result);
+                        res.status(201).json(resUser);
                 }
         });
 })
@@ -62,21 +73,17 @@ app.post('/login', function (req, res) {
         var usuario_correo = req.body.usuario_correo;
         var contrasenia = req.body.contrasenia;
 
-        var query = "CALL Login('" + usuario_correo + "');";
-        conexion.query(query, async function (err, result) {
-                if (err) {
-                        throw err;
-                } else {      
-                        var resultado = result[0][0];
-                        if (resultado != undefined) {
-                                if (encriptacion.comparacion(contrasenia, resultado.contraseña)) {
-                                        res.status(200).json(resultado)
-                                } else {
-                                        res.status(400).json({ caso: 2, mensaje: 'contrasenia incorrecta' })
-                                }
-                        } else {
-                                res.status(400).json({ caso: 1, mensaje: 'correo o usuario no existe' })
-                        }
+        AwsCognito.getCognitoUser(usuario_correo).authenticateUser(AwsCognito.getAuthDetails(usuario_correo, contrasenia), {
+                onSuccess: (result) => {
+                        const token = {
+                                accessToken: result.getAccessToken().getJwtToken(),
+                                idToken: result.getIdToken().getJwtToken(),
+                                refreshToken: result.getRefreshToken().getToken(),
+                        }  
+                        res.status(200).json(AwsCognito.decodeJWTToken(token));
+                },
+                onFailure: (err) => {    
+                        res.status(400).json(err.message || JSON.stringify(err));
                 }
         });
 })

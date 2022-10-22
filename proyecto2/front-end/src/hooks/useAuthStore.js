@@ -13,8 +13,7 @@ export const useAuthStore = () => {
 
         try {
             const { data } = await storageApi.post('login', { "usuario_correo": usuario, "contrasenia": password });
-            delete data.contraseña;
-
+            
             localStorage.setItem('user', JSON.stringify(data));
             dispatch(onLogin(data));
         } catch (error) {
@@ -43,9 +42,6 @@ export const useAuthStore = () => {
             const config = { headers: { 'content-type': 'multipart/form-data' } }
             const { data } = await storageApi.post("registrar", formData, config);
 
-            delete data.codigo;
-            delete data.mensaje;
-            
             localStorage.setItem('user', JSON.stringify(data));
             dispatch(onLogin(data));
         } catch (error) {

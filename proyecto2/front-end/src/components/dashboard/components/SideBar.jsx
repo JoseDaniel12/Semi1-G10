@@ -34,9 +34,9 @@ export const SideBar = ({drawerWidth = 240, mobileOpen, handleDrawerToggle}) => 
                 <Grid item xs={12}>
                     <br/>
                     <img className="foto-perfil" src={`https://archivos-g10-p1.s3.amazonaws.com/fotos/${user.id}.${user.formatoFoto}`} width="100" />
-                    <Typography variant='h6' noWrap component='div'>{user.nombre_usuario}</Typography>
+                    <Typography variant='h6' noWrap component='div'>{user.username}</Typography>
                     <Typography variant="subtitle1" color="text.secondary" component="div">
-                        {user.correo}
+                        {user.email}
                     </Typography>
                 </Grid>
             </Grid>
