@@ -36,6 +36,7 @@ app.use(fileUpload({
 
 
 const AwsCognito = require('./aws/cognito');
+const { RDS } = require('aws-sdk');
 
 app.post('/registrar', function (req, res) {
         var nombre = req.body.nombre;
@@ -60,11 +61,18 @@ app.post('/registrar', function (req, res) {
                                 ext_foto: extensionFoto,
                                 name: nombre
                         }
-                        // result.user.username
-                        // result.userSub
+                        
+                        // Guardar en Mysql
+                        var query = `CALL Registrar('${resUser.uid}', '${resUser.name}', '${resUser.username}', '${encriptacion.encriptar(contrasenia)}','${resUser.email}','${resUser.ext_foto}');`
+                        conexion.query(query, async function (err, result) {
+                                if (err) {
+                                        res.status(400).json(err);
+                                } else {
+                                        res.status(201).json(resUser);
+                                }       
+                        });
+
                         // const subirFoto = await uploadToBucket('fotos', imgSubir, result.user.username);
-                        // console.log(result);
-                        res.status(201).json(resUser);
                 }
         });
 })

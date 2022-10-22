@@ -1,23 +1,29 @@
+DROP TABLE usuarios;
+CREATE TABLE usuarios (
+	id int PRIMARY KEY AUTO_INCREMENT,
+	sub_cognito VARCHAR(255),
+	nombre VARCHAR(255),
+	usuario VARCHAR(250),
+	contraseña VARCHAR(255),
+	correo VARCHAR(250),
+	ext_foto VARCHAR(5),
+)
+
 #-------------------------------------------
 # Procedimiento para registrar usuarios
 #-------------------------------------------
 DROP PROCEDURE IF EXISTS Registrar;
 CREATE PROCEDURE Registrar (
+	IN in_sub VARCHAR(255),
 	IN in_nombre VARCHAR(250),
 	IN in_usuario VARCHAR(250),
+	IN in_contrasenia VARCHAR(255),
 	IN in_correo VARCHAR(250),
-	IN in_contrasenia VARCHAR(250),
-	IN in_formatoFoto VARCHAR(5)
+	IN in_extension VARCHAR(5),
 )
 BEGIN
-	IF EXISTS (SELECT id FROM usuario WHERE correo = in_correo) THEN
-		SELECT 400 AS codigo, 'Correo ya en uso' AS mensaje;
-	ELSEIF EXISTS (SELECT id FROM usuario WHERE nombre_usuario = in_usuario) THEN
-		SELECT 400 AS codigo, 'Usuario ya en uso' AS mensaje;
-	ELSE
-		INSERT INTO usuario(nombre_completo, nombre_usuario, correo, contraseña, formatoFoto) 
-			VALUES(in_nombre, in_usuario, in_correo, in_contrasenia, in_formatoFoto);
-		SELECT 200 AS codigo, 'Se registro usuario' AS mensaje, u.* FROM usuario u WHERE id = (SELECT MAX(id) FROM usuario);
+		INSERT INTO usuarios (sub_cognito, nombre, usuario, correo, ext_foto) 
+			VALUES(in_sub, in_nombre, in_usuario, in_correo, in_extension);
 		COMMIT;
 	END IF;
 END;
