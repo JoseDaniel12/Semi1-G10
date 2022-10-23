@@ -14,6 +14,33 @@ const prueba = async (req, res) => {
 };
 
 
+const amigos = async (req, res) => {
+    const { id_usuario } = req.body;
+
+    const result = await exec_proc('amigos', [id_usuario]);
+    if (result.err) {
+        res.status(400).json(err);
+    }
+
+    res.status(200).json(result);
+};
+
+const mensajes = async (req, res) => {
+    const { id_usuario, id_amigo } = req.body;
+
+    const result = await exec_proc('mensajes', [id_usuario, id_amigo]);
+    if (result.err) {
+        res.status(400).json(result.err);
+    }
+
+    res.status(200).json(result);
+};
+
+
+
+
 module.exports = {
     prueba,
+    amigos,
+    mensajes
 };

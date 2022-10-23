@@ -3,16 +3,50 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Chat } from "@mui/icons-material";
+import io from "socket.io-client";
+import { Chat, MessageSharp } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 
-const Chats = () => {
+const socket = io.connect("http://localhost:3001");
 
+
+const Chats = ({room}) => {
   const styles={
     imgChat: {
       backgroundImage: 'url(https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80)'
     }
   }
 
+  const [amigos, setAmigos] = useState([]);
+  const [amigo, setAmigo] = useState(-1);
+
+  const [messages, setContentMessages] = useState([]);
+  const [contetMessage, setContentMessage] = useState("");
+
+  const handleContentMessage = (event) => {
+    setContentMessage(event.target.value);
+  }
+  
+  const sendMessage = () => {
+    const message = {
+      contenido: contetMessage,
+      id_usuario: 1,
+      id_amigo: amigo.id
+    }
+    socket.emit("sending_message", {message, room});
+    setContentMessages([...messages, message]);
+    setContentMessage("");
+  }
+
+  useEffect(() => {
+    // Conectarse a la sala con un amigo
+    socket.emit("joining_room", `${1}-${amigo.id}`);
+
+    // Escuchar si el amigo ha enviado algun mensaje
+    socket.on("relaying_message", m => {
+      setContentMessages([...messages, message]);
+    });
+  }, [socket])
 
   return (
     <>
@@ -27,6 +61,7 @@ const Chats = () => {
               <Grid container sx={{ mt: 2 }} alignItems="center" justifyContent="center">
                 <Grid item xs={1} lg={3} sx={{ p: 2 }}>
                   <Card sx={{ maxWidth: 445 }}>
+                    
                     <Card>
                       <CardHeader
                         avatar={
@@ -38,38 +73,8 @@ const Chats = () => {
                       />
                     </Card>
 
-                    <Card>
-                      <CardHeader
-                        avatar={
-                          <Avatar sx={{ bgcolor: '#1c54b2' }} aria-label="recipe">
-                            R
-                          </Avatar>
-                        }
-                        title="Titulo publi"
-                      />
-                    </Card>
 
-                    <Card>
-                      <CardHeader
-                        avatar={
-                          <Avatar sx={{ bgcolor: '#1c54b2' }} aria-label="recipe">
-                            R
-                          </Avatar>
-                        }
-                        title="Titulo publi"
-                      />
-                    </Card>
 
-                    <Card>
-                      <CardHeader
-                        avatar={
-                          <Avatar sx={{ bgcolor: '#1c54b2' }} aria-label="recipe">
-                            R
-                          </Avatar>
-                        }
-                        title="Titulo publi"
-                      />
-                    </Card>
                   </Card>
                 </Grid>
 
@@ -113,9 +118,16 @@ const Chats = () => {
                         </div>
                       </div>
 
-                      <TextField 
-                        label="Escribe tu mensaje..." variant="outlined" type="text" fullWidth sx={{ mt: 2 }} >
-                      </TextField>
+                      <input 
+                        name="message"
+                        type="text" 
+                        placeholder="Escribe tu mensaje..."
+                        onChange={handleContentMessage}
+                      />
+
+                      <button onClick={sendMessage}>
+                        send
+                      </button>
                     </section>
 
                   </Card>
@@ -129,4 +141,4 @@ const Chats = () => {
 }
 
 
-export default Chat;
+export default Chats;

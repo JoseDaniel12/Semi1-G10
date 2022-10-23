@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useActivityStore } from "../../../hooks/useActivityStore";
 import { activityTypes } from "../../../types/activityTypes";
 import { AgregarAmigo, ArchivosUsuario, EditarArchivo, EliminarArchivo, SubirArchivo, VerArchivos } from "../activity";
-import { Chats } from "../activity/Chats/Chats";
+import  Chats  from "../activity/Chats/Chats";
 import { EditarCuenta } from "../activity/EditarCuenta/EditarCuenta";
 import { Inicio } from "../activity/Inicio/Inicio";
 import { Publicaciones } from "../activity/Publicaciones/Publicaciones";

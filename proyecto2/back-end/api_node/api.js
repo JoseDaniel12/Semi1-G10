@@ -5,6 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const encriptacion = require("./encriptacion");
 const mysql = require('mysql');
+const { exec_proc } = require('./database/db_exec_v2')
 const { Server } = require('socket.io');
 const { uploadToBucket, removeFromBucket } = require('./aws/s3');
 
@@ -30,11 +31,23 @@ const conexion = mysql.createConnection({
 // Sockets
 const io = new Server(server);
 
+io.on("connection",  (socket) => {
+        socket.on("joining_room", (room) => {
+                socket.join(room);
+        });
+
+        socket.on("sending_message", async (message) => {
+                const { contenido, id_usuario, id_amigo } = message;
+                await exec_proc('almacenar_mensaje', [contenido, id_usuario, id_amigo]);
+                socket.to(data.room).emmit("relaying_message", message);
+        });
+})
+
 
 
 // Rutas
 app.get('/', function (req, res) {
-        res.json({ message: 'Semi1_Grupo10' })
+        res.json({ message: 'Semi1_Grupo10' });
 })
 
 const exphbrs = require('express-handlebars');
@@ -47,6 +60,7 @@ app.use(fileUpload({
 
 const AwsCognito = require('./aws/cognito');
 const { RDS } = require('aws-sdk');
+const { accessSync } = require('fs');
 
 app.post('/registrar', function (req, res) {
         var nombre = req.body.nombre;
