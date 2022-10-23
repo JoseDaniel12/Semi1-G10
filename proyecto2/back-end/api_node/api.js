@@ -1,20 +1,23 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-var mysql = require('mysql');
-
 require('dotenv').config({ path: './.env' });
-
+const express = require('express');
+const http = require('http');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const encriptacion = require("./encriptacion");
+const mysql = require('mysql');
+const { Server } = require('socket.io');
 const { uploadToBucket, removeFromBucket } = require('./aws/s3');
 
+const app = express();
+const server = http.createServer(app);
+const corsOptions = { origin: true, optionSuccessStatus: 200 };
 
-var corsOptions = { origin: true, optionSuccessStatus: 200 };
+// Midlewares
 app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
+// Database
 const port = process.env.NODE_PUERTO
 const conexion = mysql.createConnection({
         host: process.env.BASE_HOST,
@@ -23,6 +26,13 @@ const conexion = mysql.createConnection({
         database: process.env.BASE_NOMBRE
 });
 
+
+// Sockets
+const io = new Server(server);
+
+
+
+// Rutas
 app.get('/', function (req, res) {
         res.json({ message: 'Semi1_Grupo10' })
 })
@@ -137,5 +147,7 @@ app.use('/archivos', require('./routes/archivos.routes'));
 app.use('/amigos', require('./routes/amigos.routes'));
 app.use('/chat', require('./routes/chat.routes'));
 
-app.listen(port);
-console.log("Escuchando en el puerto", port);
+
+server.listen(port, () => {
+        console.log("Escuchando en el puerto", port);
+})

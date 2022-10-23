@@ -52,9 +52,6 @@ const removeFromBucket = async (s3_key) => {
 const copyObject = async (source_s3_key, s3_destination_dir) => {
     const full_file_name = source_s3_key.split('/').slice(-1);
     const new_s3_key = `${s3_destination_dir}/${full_file_name}`;
-    console.log(bucket)
-    console.log(source_s3_key)
-    console.log(new_s3_key)
     const params = {
         Bucket: bucket,
         CopySource: source_s3_key,

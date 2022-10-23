@@ -1,6 +1,7 @@
 const {exec_proc, exec_query} = require('../database/db_exec_v2');
 const {uploadToBucket, removeFromBucket, copyObject} = require('../aws/s3');
 
+
 const prueba = async (req, res) => {
     const { file_name} = req.body;
     const { file } = req.files;

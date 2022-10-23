@@ -3,8 +3,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { Chat } from "@mui/icons-material";
 
-export const Chats = () => {
+const Chats = () => {
 
   const styles={
     imgChat: {
@@ -18,6 +19,7 @@ export const Chats = () => {
       <Box>
           <Card sx={{ minWidth: 275, mb: 2 }}>
             <CardContent>
+
               <Typography variant="h5" component="div">
                 Chats
               </Typography>
@@ -35,6 +37,7 @@ export const Chats = () => {
                         title="Titulo publi"
                       />
                     </Card>
+
                     <Card>
                       <CardHeader
                         avatar={
@@ -45,6 +48,7 @@ export const Chats = () => {
                         title="Titulo publi"
                       />
                     </Card>
+
                     <Card>
                       <CardHeader
                         avatar={
@@ -55,6 +59,7 @@ export const Chats = () => {
                         title="Titulo publi"
                       />
                     </Card>
+
                     <Card>
                       <CardHeader
                         avatar={
@@ -70,10 +75,12 @@ export const Chats = () => {
 
                 <Grid item xs={12} lg={9} sx={{ p: 2 }}>
                   <Card sx={{ maxWidth: 'auto' }}>
+
                     <section className="chat">
                       <div className="header-chat">
                         <p className="name">Joel Ramirez</p>
                       </div>
+
                       <div className="messages-chat">
                         <div className="message">
                           <div className="photo" style={styles.imgChat}>
@@ -81,19 +88,23 @@ export const Chats = () => {
                           </div>
                           <p className="text"> 1 </p>
                         </div>
+
                         <div className="message text-only">
                           <p className="text"> 2</p>
                         </div>
+
                         <div className="message text-only">
                           <div className="response">
                             <p className="text"> 3</p>
                           </div>
                         </div>
+
                         <div className="message text-only">
                           <div className="response">
                             <p className="text">4</p>
                           </div>
                         </div>
+
                         <div className="message">
                           <div className="photo" style={styles.imgChat}>
                             <div className="online"></div>
@@ -101,17 +112,21 @@ export const Chats = () => {
                           <p className="text">5</p>
                         </div>
                       </div>
+
                       <TextField 
                         label="Escribe tu mensaje..." variant="outlined" type="text" fullWidth sx={{ mt: 2 }} >
-                        </TextField>
+                      </TextField>
                     </section>
+
                   </Card>
                 </Grid>
               </Grid>
-
             </CardContent>
           </Card>
       </Box>
     </>
   )
 }
+
+
+export default Chat;
