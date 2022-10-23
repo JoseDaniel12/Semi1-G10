@@ -7,7 +7,7 @@ require('dotenv').config({ path: './.env' });
 
 const cors = require('cors');
 const encriptacion = require("./encriptacion");
-const { uploadToBucket, removeFromBucket } = require('./helpers/s3');
+const { uploadToBucket, removeFromBucket } = require('./aws/s3');
 
 
 var corsOptions = { origin: true, optionSuccessStatus: 200 };
@@ -135,6 +135,7 @@ app.post('/archivosAmigos', function (req, res) {
 
 app.use('/archivos', require('./routes/archivos.routes'));
 app.use('/amigos', require('./routes/amigos.routes'));
+app.use('/chat', require('./routes/chat.routes'));
 
 app.listen(port);
 console.log("Escuchando en el puerto", port);

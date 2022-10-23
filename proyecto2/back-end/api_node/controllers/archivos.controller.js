@@ -1,4 +1,4 @@
-const {uploadToBucket, removeFromBucket, copiarObjeto} = require('../helpers/s3');
+const {uploadToBucket, removeFromBucket, copiarObjeto} = require('../aws/s3');
 const db_exec = require('../database/db_exec');
 const encryptor = require("../encriptacion");
 const date = require('../helpers/time');
