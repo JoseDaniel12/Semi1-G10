@@ -16,14 +16,15 @@ export function getAmigos(user) {
     return storageApi.post('amigos/getAmigos', user)
 }
 
-export function enviarSolicitud(user) {
-    return storageApi.post('amigos/enviarSolicitud', user)
+export function enviarSolicitud(usuario, destino) {
+    return storageApi.post('amigos/enviarSolicitud', { usuario: usuario, destino: destino })
+}
+
+export function aceptarSolicitud(usuario, destino) {
+    return storageApi.post('amigos/aceptarSolicitud', { usuario: usuario, destino: destino })
 }
 
 export function rechazarSolicitud(user) {
     return storageApi.post('amigos/rechazarSolicitud', user)
 }
 
-export function aceptarSolicitud(user) {
-    return storageApi.post('amigos/aceptarSolicitud', user)
-}

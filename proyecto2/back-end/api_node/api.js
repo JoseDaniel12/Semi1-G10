@@ -29,17 +29,23 @@ const conexion = mysql.createConnection({
 
 
 // Sockets
-const io = new Server(server);
+const io = new Server(server, {
+        cors: {
+                origin: process.env.FRONTEND,
+                methods: ['GET', 'POST']
+        }
+});
+
 
 io.on("connection",  (socket) => {
         socket.on("joining_room", (room) => {
                 socket.join(room);
         });
 
-        socket.on("sending_message", async (message) => {
-                const { contenido, id_usuario, id_amigo } = message;
+        socket.on("sending_message", async (data) => {
+                const { contenido, id_usuario, id_amigo } = data.m;
                 await exec_proc('almacenar_mensaje', [contenido, id_usuario, id_amigo]);
-                socket.to(data.room).emmit("relaying_message", message);
+                socket.to(data.room).emit("relaying_message", data.m);
         });
 })
 
