@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import io from "socket.io-client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef  } from "react";
 import { useAuthStore } from "../../../../hooks/useAuthStore";
 import storageApi from "../../../../api/storageApi";
 
@@ -18,7 +18,7 @@ const Chats = () => {
 
   const [idUsuario, setIdUsuario] = useState(-1);
   const [amigos, setAmigos] = useState([]);
-  const [idAmigo, setIdAmigo] = useState(-1);
+  const [amigo, setAmigo] = useState(null);
 
   const [messages, setMessages] = useState([]);
   const [contetMessage, setContentMessage] = useState("");
@@ -36,24 +36,24 @@ const Chats = () => {
     const m = {
       contenido: contetMessage,
       id_usuario: idUsuario,
-      id_amigo: idAmigo
+      id_amigo: amigo.id_usuario
     }
     socket.emit("sending_message", {m, room});
     setMessages([...messages, m]);
     setContentMessage("");
   }
 
-  const handleFriend = async (id_amigo) => {
-    setIdAmigo(id_amigo);
+  const handleFriend = async (amigo) => {
+    setAmigo(amigo);
 
     // Conectarse a la sala con un amigo
-    const ids = [idUsuario, id_amigo].sort()
+    const ids = [idUsuario, amigo.id_usuario].sort()
     const r =  `${ids[0]}-${ids[1]}`;
     setRoom(r);
     socket.emit("joining_room", r);
 
     // Se obtiene los mensajes con el amigo
-    const res = await storageApi.post('chat/mensajes', {id_usuario: idUsuario, id_amigo: id_amigo});
+    const res = await storageApi.post('chat/mensajes', {id_usuario: idUsuario, id_amigo: amigo.id_usuario});
     setMessages(res.data);
   }
 
@@ -95,7 +95,7 @@ const Chats = () => {
                               </Avatar>
                             }
                             title={amigo.usuario}
-                            onClick={() => handleFriend(amigo.id_usuario)}
+                            onClick={() => handleFriend(amigo)}
                           />
                         </Card>
                       ))
@@ -104,38 +104,43 @@ const Chats = () => {
                 </Grid>
 
                 <Grid item xs={12} lg={9} sx={{ p: 2 }}>
-                  <Card sx={{ maxWidth: 'auto' }}>
 
-                    <section className="chat">
-                      <div className="header-chat">
-                        <p className="name">Joel Ramirez</p>
-                      </div>
+                  {
+                    amigo === null ? <div></div> : 
+                    <Card sx={{ maxWidth: 'auto' }}>
 
-                      <div className="messages-chat">
-                        {
-                          messages.map((m, i) => (
-                            <div className="message" key={i}>
-                              <div className={m.id_usuario === idUsuario? "message": "response"}>
-                                <p className="text">{m.contenido}</p>
+                      <section className="chat">
+                        <div className="header-chat">
+                          <p className="name">{amigo.usuario}</p>
+                        </div>
+
+                        <div className="messages-chat">
+                          {
+                            messages.map((m, i) => (
+                              <div className="message" key={i}>
+                                <div className={m.id_usuario === idUsuario? "message": "response"}>
+                                  <p className="text">{m.contenido}</p>
+                                </div>
                               </div>
-                            </div>
-                          ))
-                        }
-                      </div>
+                            ))
+                          }
+                        </div>
 
-                      <input 
-                        name="message"
-                        type="text" 
-                        placeholder="Escribe tu mensaje..."
-                        onChange={handleContentMessage}
-                      />
+                        <input 
+                          value={contetMessage}
+                          name="message"
+                          type="text" 
+                          placeholder="Escribe tu mensaje..."
+                          onChange={handleContentMessage}
+                        />
 
-                      <button onClick={sendMessage}>
-                        send
-                      </button>
-                    </section>
+                        <button onClick={sendMessage}>
+                          send
+                        </button>
+                      </section>
 
-                  </Card>
+                    </Card>
+                  }
                 </Grid>
               </Grid>
             </CardContent>
