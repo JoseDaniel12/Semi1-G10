@@ -2,9 +2,6 @@ USE proyecto2;
 
 SELECT * FROM usuarios;
 
-INSERT INTO usuarios(sub_cognito, nombre, usuario, contraseña, correo, ext_foto, modo_bot)
-VALUES("anonimo1", "william1", "william1", "1234", "wiliamborrayo1@gmail.com", "png", 1);
-
 CREATE TABLE amistad (
 	id_amistad INT PRIMARY KEY AUTO_INCREMENT,
 	usuario1 INT,
@@ -14,12 +11,12 @@ CREATE TABLE amistad (
 	FOREIGN KEY (usuario2) REFERENCES usuarios(id) ON DELETE CASCADE 
 );
 
-INSERT INTO amistad(usuario1, usuario2, estado) VALUES(1,2,FALSE);
+
 
 SELECT * FROM amistad;
 
 DELETE FROM amistad WHERE id_amistad = 1;
-
+DELETE FROM usuarios WHERE id > 1;
 
 -- para obtener no amigos
 SELECT * FROM usuarios us1
@@ -28,29 +25,44 @@ AND NOT EXISTS (
 	SELECT * FROM amistad am WHERE am.usuario1 = 1 AND am.usuario2 = us1.id
 ) AND NOT EXISTS (
 	SELECT * FROM amistad am WHERE am.usuario2 = 1 AND am.usuario1 = us1.id
-)
-
--- para obtener solicitudes recibidas
-SELECT * FROM usuarios us1
-WHERE id <> 1
-AND EXISTS (
-	SELECT * FROM amistad am WHERE am.usuario2 = 1 AND am.usuario1 = us1.id AND am.estado = 0
-)
+);
 
 -- para obtener solicitudes enviadas
 SELECT * FROM usuarios us1
 WHERE id <> 1
 AND EXISTS (
 	SELECT * FROM amistad am WHERE am.usuario1 = 1 AND am.usuario2 = us1.id AND am.estado = 0
-)
+);
 
+-- para obtener solicitudes recibidas
+SELECT * FROM usuarios us1
+WHERE id <> 7
+AND EXISTS (
+	SELECT * FROM amistad am WHERE am.usuario2 = 7 AND am.usuario1 = us1.id AND am.estado = 0
+);
 
 -- para obtener amigos
 SELECT * FROM usuarios us1
-WHERE id <> 1
+WHERE id <> 4
 AND EXISTS (
-	SELECT * FROM amistad am WHERE am.usuario1 = 1 AND am.usuario2 = us1.id AND am.estado = 1
-) OR EXISTS (
-	SELECT * FROM amistad am WHERE am.usuario2 = 1 AND am.usuario1 = us1.id AND am.estado = 1
-)
+	SELECT * FROM amistad am WHERE am.usuario1 = 4 AND am.usuario2 = us1.id AND am.estado = 1
+)OR EXISTS (
+	SELECT * FROM amistad am WHERE am.usuario2 = 4 AND am.usuario1 = us1.id AND am.estado = 1
+);
+
+-- enviar solicitud: usuario1 = remitente, usuario2 = receptor
+INSERT INTO amistad(usuario1, usuario2, estado) VALUES(1,4,FALSE);
+
+-- aceptar solicitud: usuario1 = remitente, usuario2 = receptor
+UPDATE amistad SET estado = 1 WHERE(usuario1 = 4 AND usuario2 = 1) OR (usuario1 = 1 AND usuario2 = 4);
+
+-- rechazar solicitud o eliminar amistad
+DELETE FROM amistad WHERE(usuario1 = 4 AND usuario2 = 1) OR (usuario1 = 1 AND usuario2 = 4);
+
+SELECT id FROM usuarios WHERE correo='mjeffryemanuel@gmail.com' AND usuario='jmengt';
+SELECT * FROM usuarios;
+
+UPDATE amistad SET estado = 0;
+SELECT * FROM amistad;
+
 

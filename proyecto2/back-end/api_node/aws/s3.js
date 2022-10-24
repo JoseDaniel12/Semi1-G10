@@ -39,7 +39,6 @@ const uploadToBucket = (file, short_file_name, directory) => {
     return s3.upload(params).promise();
 };
 
-
 const removeFromBucket = async (s3_key) => {
     const params = {
         Bucket: bucket,
@@ -75,5 +74,5 @@ module.exports = {
     uploadToBucket,
     copyObject,
     removeFromBucket,
-    renameObject
+    renameObject,
 };

@@ -6,13 +6,14 @@ import Typography from '@mui/material/Typography';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import CheckIcon from '@mui/icons-material/Check';
 import CancelIcon from '@mui/icons-material/Cancel';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 import { useState, useEffect } from 'react';
 import {
   getNoAmigos, getEnviadas,
   getRecibidas, getAmigos,
   enviarSolicitud, aceptarSolicitud,
-  rechazarSolicitud
+  eliminarAmistad
 } from "../../../endpoints/amigos";
 import { useAuthStore } from "../../../../hooks/useAuthStore";
 
@@ -29,23 +30,23 @@ export const Inicio = () => {
 
   useEffect(() => {
     getNoAmigos(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setNoAmigos(response.data);
       setUsuarios(response.data);
     });
 
     getEnviadas(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setEnviadas(response.data);
     });
 
     getRecibidas(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setRecibidas(response.data);
     });
 
     getAmigos(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setAmigos(response.data);
     });
 
@@ -63,9 +64,64 @@ export const Inicio = () => {
   }
 
   function EnviarSolicitud(destino) {
-    enviarSolicitud(destino).then((response) => {
-      console.log("esto recibio", response.data);
-      //setAmigos(response.data);
+    enviarSolicitud(user, destino).then((response) => {
+      alert("solicitud enviada");
+      console.log(response.data);
+
+      const del = noAmigos.filter(amigo => amigo.correo !== destino.correo);
+      setNoAmigos(del);
+      setUsuarios(del);
+
+      const nuevaEnviadas = [...enviadas, destino];
+      setEnviadas(nuevaEnviadas)
+
+    }).catch(err => {
+      alert("Error :(");
+    });
+  }
+
+  function AceptarSolicitud(destino) {
+    aceptarSolicitud(user, destino).then((response) => {
+      alert("solicitud aceptada");
+      console.log(response.data);
+
+      const del = recibidas.filter(amigo => amigo.correo !== destino.correo);
+      setRecibidas(del);
+
+      const nuevosAmigos = [...amigos, destino];
+      setAmigos(nuevosAmigos)
+
+    }).catch(err => {
+      alert("Error :(");
+    });
+  }
+
+  function EliminarAmistad(destino) {
+    eliminarAmistad(user, destino).then((response) => {
+      alert("Eliminado");
+      console.log(response.data);
+
+      // eliminar de solicitudes
+      if (estado === 1) {
+        const del = recibidas.filter(amigo => amigo.correo !== destino.correo);
+        setRecibidas(del);
+
+        const del1 = enviadas.filter(amigo => amigo.correo !== destino.correo);
+        setEnviadas(del1);
+        setUsuarios(del1);
+      }
+      // eliminar de amigos
+      else {
+        const del2 = amigos.filter(amigo => amigo.correo !== destino.correo);
+        setAmigos(del2);
+        setUsuarios(del2);
+      }
+
+      const nuevosNoAmigos = [...noAmigos, destino];
+      setNoAmigos(nuevosNoAmigos);
+
+    }).catch(err => {
+      alert("Error :(");
     });
   }
 
@@ -88,7 +144,7 @@ export const Inicio = () => {
             Solicitudes de amistad
           </Typography>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Pendientes
+            Enviadas
           </Typography>
         </>
       )
@@ -98,6 +154,32 @@ export const Inicio = () => {
           <Typography variant="h5" component="div">
             Amigos
           </Typography>
+        </>
+      )
+    }
+  }
+
+  function renderizarBotones(destino) {
+    if (estado === 0) {
+      return (
+        <IconButton color="secondary" aria-label="delete" onClick={() => EnviarSolicitud(destino)}>
+          <PersonAddIcon />
+        </IconButton>
+      )
+    } else if (estado === 1) {
+      return (
+        <>
+          <IconButton color="error" aria-label="delete" onClick={() => EliminarAmistad(destino)}>
+            <CancelIcon />
+          </IconButton>
+        </>
+      )
+    } else {
+      return (
+        <>
+          <IconButton color="error" aria-label="delete" onClick={() => EliminarAmistad(destino)}>
+            <CancelIcon />
+          </IconButton>
         </>
       )
     }
@@ -114,32 +196,26 @@ export const Inicio = () => {
             {mostrarTitulos()}
             <Grid container sx={{ mt: 2 }} alignItems="center" justifyContent="left">
               <Grid item xs={10} md={6} lg={4} sx={{ p: 2 }}>
-                <Card sx={{ display: 'flex', p: 2 }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-                      <Avatar src={``} sx={{ width: 56, height: 56 }} />
+                {
+                  usuarios.map((usuario) =>
+                    <>
                       {
-                        usuarios.map((usuario) =>
-                          <>
-                            {
+                        <Card sx={{ display: 'flex', p: 2 }}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+                              <Avatar src={``} sx={{ width: 56, height: 56 }} />
                               <Box sx={{ ml: 3 }}>
                                 <Typography variant="subtitle1" color="text.secondary" component="div">
                                   {usuario.nombre} - {usuario.correo}
                                 </Typography>
-                                <IconButton color="secondary" aria-label="delete">
-                                  <CheckIcon />
-                                </IconButton>
-                                <IconButton color="error" aria-label="delete">
-                                  <CancelIcon />
-                                </IconButton>
+                                {renderizarBotones(usuario)}
                               </Box>
-                            }
-                          </>
-                        )}
-
-                    </Box>
-                  </Box>
-                </Card>
+                            </Box>
+                          </Box>
+                        </Card>
+                      }
+                    </>
+                  )}
               </Grid>
             </Grid>
             {estado === 1 ?
@@ -149,32 +225,31 @@ export const Inicio = () => {
                 </Typography>
                 <Grid container sx={{ mt: 2 }} alignItems="center" justifyContent="left">
                   <Grid item xs={10} md={6} lg={4} sx={{ p: 2 }}>
-                    <Card sx={{ display: 'flex', p: 2 }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-                          <Avatar src={``} sx={{ width: 56, height: 56 }} />
+                    {
+                      recibidas.map((usuario) =>
+                        <>
                           {
-                            recibidas.map((usuario) =>
-                              <>
-                                {
+                            <Card sx={{ display: 'flex', p: 2 }}>
+                              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+                                  <Avatar src={``} sx={{ width: 56, height: 56 }} />
                                   <Box sx={{ ml: 3 }}>
                                     <Typography variant="subtitle1" color="text.secondary" component="div">
                                       {usuario.nombre} - {usuario.correo}
                                     </Typography>
-                                    <IconButton color="secondary" aria-label="delete">
+                                    <IconButton color="secondary" aria-label="delete" onClick={() => AceptarSolicitud(usuario)}>
                                       <CheckIcon />
                                     </IconButton>
-                                    <IconButton color="error" aria-label="delete">
+                                    <IconButton color="error" aria-label="delete" onClick={() => EliminarAmistad(usuario)}>
                                       <CancelIcon />
                                     </IconButton>
                                   </Box>
-                                }
-                              </>
-                            )}
-
-                        </Box>
-                      </Box>
-                    </Card>
+                                </Box>
+                              </Box>
+                            </Card>
+                          }
+                        </>
+                      )}
                   </Grid>
                 </Grid>
               </>
