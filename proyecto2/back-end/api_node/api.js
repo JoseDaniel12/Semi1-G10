@@ -7,7 +7,9 @@ const encriptacion = require("./encriptacion");
 const mysql = require('mysql');
 const { exec_proc } = require('./database/db_exec_v2')
 const { Server } = require('socket.io');
+const { talk_to_bot } = require('./aws/amazon_lex')
 const { uploadToBucket, removeFromBucket } = require('./aws/s3');
+const prueba = require('./aws/amazon_lex')
 
 const app = express();
 const server = http.createServer(app);
@@ -44,8 +46,17 @@ io.on("connection",  (socket) => {
 
         socket.on("sending_message", async (data) => {
                 const { contenido, id_usuario, id_amigo } = data.m;
-                await exec_proc('almacenar_mensaje', [contenido, id_usuario, id_amigo]);
                 socket.to(data.room).emit("relaying_message", data.m);
+                await exec_proc('almacenar_mensaje', [contenido, id_usuario, id_amigo]);
+
+                const {modo_bot} = (await exec_proc('get_modo_bot', [id_amigo]))[0];
+                if (modo_bot === 1) {
+                        const message_contents = talk_to_bot(contenido);
+                        message_contents.map(mc => {
+                                socket.to(data.room).emit("relaying_message", mc.content);
+                        })
+                        await exec_proc('almacenar_mensaje', [mc.contenido, id_amigo, id_usuario]);
+                }
         });
 })
 

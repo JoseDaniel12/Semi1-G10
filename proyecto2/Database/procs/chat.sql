@@ -1,5 +1,31 @@
 USE proyecto2;
 
+-- Obtener modo bot de usuario
+DROP PROCEDURE get_modo_bot;
+CREATE PROCEDURE get_modo_bot (
+	p_id_usuario INT
+)
+BEGIN
+	SELECT modo_bot FROM usuarios WHERE id = p_id_usuario;
+END;
+CALL get_modo_bot(1);
+
+
+
+-- Activar o desactivar modo bot en usuario
+DROP PROCEDURE set_modo_bot;
+CREATE PROCEDURE set_modo_bot (
+	p_id_usuario INT,
+	p_modo_bot INT
+)
+BEGIN
+	UPDATE usuarios 
+	SET modo_bot = p_modo_bot
+	WHERE id = p_id_usuario;
+END;
+CALL set_modo_bot(1, 1);
+
+
 -- Obtener id de usuario
 DROP PROCEDURE id_usuario;
 CREATE PROCEDURE id_usuario (

@@ -1,17 +1,32 @@
 const {exec_proc, exec_query} = require('../database/db_exec_v2');
 const {uploadToBucket, removeFromBucket, copyObject} = require('../aws/s3');
+const {talk_to_bot} = require('../aws/amazon_lex')
 
 
 const prueba = async (req, res) => {
-    const { file_name} = req.body;
-    const { file } = req.files;
+    const messages_content = await talk_to_bot(req.body.message_content);
+    // const { file_name} = req.body;
+    // const { file } = req.files;
 
     //const result = await uploadToBucket( file, file_name, 'prueba');
     //const result = await removeFromBucket('prueba/petronilo.jpg');
-    const result = await copyObject('prueba/petronilo.jpg', 'prueba');
+    // const result = await copyObject('prueba/petronilo.jpg', 'prueba');
     //const result = await copyObject('/prueba/petronilo.jpg', '/vecino');
-    res.status(200).json(result);
+
+
+    res.status(200).json(messages_content);
 };
+
+
+const set_modo_bot = async (req, res) => {
+    const { id_usuario, modo_bot } = req.body;
+    const error = await exec_proc('set_modo_bot', [id_usuario, modo_bot]);
+    if (error) {
+        res.status(400).json({err: error});
+        return;
+    }
+    res.status(200).json({msg: 'Se ha establecido el modo bot.'});
+}
 
 
 const id_usuario = async (req, res) => {
@@ -58,6 +73,7 @@ const mensajes = async (req, res) => {
 
 
 module.exports = {
+    set_modo_bot,
     id_usuario,
     prueba,
     amigos,
