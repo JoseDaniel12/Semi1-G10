@@ -1,20 +1,24 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-var mysql = require('mysql');
-
 require('dotenv').config({ path: './.env' });
-
+const express = require('express');
+const http = require('http');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const encriptacion = require("./encriptacion");
-const { uploadToBucket, removeFromBucket } = require('./helpers/s3');
+const mysql = require('mysql');
+const { exec_proc } = require('./database/db_exec_v2')
+const { Server } = require('socket.io');
+const { uploadToBucket, removeFromBucket } = require('./aws/s3');
 
+const app = express();
+const server = http.createServer(app);
+const corsOptions = { origin: true, optionSuccessStatus: 200 };
 
-var corsOptions = { origin: true, optionSuccessStatus: 200 };
+// Midlewares
 app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
+// Database
 const port = process.env.NODE_PUERTO
 const conexion = mysql.createConnection({
         host: process.env.BASE_HOST,
@@ -23,8 +27,27 @@ const conexion = mysql.createConnection({
         database: process.env.BASE_NOMBRE
 });
 
+
+// Sockets
+const io = new Server(server);
+
+io.on("connection",  (socket) => {
+        socket.on("joining_room", (room) => {
+                socket.join(room);
+        });
+
+        socket.on("sending_message", async (message) => {
+                const { contenido, id_usuario, id_amigo } = message;
+                await exec_proc('almacenar_mensaje', [contenido, id_usuario, id_amigo]);
+                socket.to(data.room).emmit("relaying_message", message);
+        });
+})
+
+
+
+// Rutas
 app.get('/', function (req, res) {
-        res.json({ message: 'Semi1_Grupo10' })
+        res.json({ message: 'Semi1_Grupo10' });
 })
 
 const exphbrs = require('express-handlebars');
@@ -37,6 +60,8 @@ app.use(fileUpload({
 const AwsCognito = require('./aws/cognito');
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 const { cognito } = require('./aws/keys');
+const { RDS } = require('aws-sdk');
+const { accessSync } = require('fs');
 
 app.post('/registrar', function (req, res) {
         var nombre = req.body.nombre;
@@ -216,6 +241,9 @@ app.post('/archivosAmigos', function (req, res) {
 
 app.use('/archivos', require('./routes/archivos.routes'));
 app.use('/amigos', require('./routes/amigos.routes'));
+app.use('/chat', require('./routes/chat.routes'));
 
-app.listen(port);
-console.log("Escuchando en el puerto", port);
+
+server.listen(port, () => {
+        console.log("Escuchando en el puerto", port);
+})

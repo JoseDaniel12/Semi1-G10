@@ -12,10 +12,15 @@ const conn = mysql.createConnection({
 
 conn.connect(function (err) {
     if (err) {
-      console.log(`DB not connected, ' + ${err.stack}`);
+      console.log(`ERROR: DB not connected: \n${err.stack}`);
+      console.log(`Host: ${con.host}`);
+      console.log(`Port: ${con.port}`);
+      console.log(`User: ${con.user}`);
+      console.log(`Database: ${con.database}`);
+      console.log(`Password: ${con.password}`);
       return;
     }
-    console.log('> correct, DB connected');
+    console.log('> Correct, DB connected.');
 });
 
 module.exports = conn;
