@@ -14,15 +14,32 @@ const prueba = async (req, res) => {
 };
 
 
+const id_usuario = async (req, res) => {
+    const { usuario } = req.body;
+
+    const result = await exec_proc('id_usuario', [usuario]);
+    if (result.err) {
+        res.status(400).json(err);
+        return;
+    } else if (result.length === 0) {
+        res.status(400).json({err: 'No hay usuarios con ese usarname.'});
+        return;
+    }
+
+    res.status(200).json({id_usuario: result[0].id_usuario});
+};
+
+
 const amigos = async (req, res) => {
     const { id_usuario } = req.body;
 
     const result = await exec_proc('amigos', [id_usuario]);
     if (result.err) {
-        res.status(400).json(err);
+        res.status(400).json(result.err);
+        return;
     }
 
-    res.status(200).json(result);
+    res.status(200).json({amigos: result});
 };
 
 const mensajes = async (req, res) => {
@@ -31,6 +48,7 @@ const mensajes = async (req, res) => {
     const result = await exec_proc('mensajes', [id_usuario, id_amigo]);
     if (result.err) {
         res.status(400).json(result.err);
+        return;
     }
 
     res.status(200).json(result);
@@ -40,6 +58,7 @@ const mensajes = async (req, res) => {
 
 
 module.exports = {
+    id_usuario,
     prueba,
     amigos,
     mensajes

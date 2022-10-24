@@ -3,24 +3,22 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import io from "socket.io-client";
-import { Chat, MessageSharp } from "@mui/icons-material";
+// import io from "socket.io-client";
 import { useEffect, useState } from "react";
+import { useAuthStore } from "../../../../hooks/useAuthStore";
+import storageApi from "../../../../api/storageApi";
 
-const socket = io.connect("http://localhost:3001");
+// const socket = io.connect("http://localhost:3001");
 
 
 const Chats = ({room}) => {
-  const styles={
-    imgChat: {
-      backgroundImage: 'url(https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80)'
-    }
-  }
+  const {user} = useAuthStore();
 
+  const [idUsuario, setIdUsuario] = useState(-1);
   const [amigos, setAmigos] = useState([]);
-  const [amigo, setAmigo] = useState(-1);
+  const [idAmigo, setIdAmigo] = useState(-1);
 
-  const [messages, setContentMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [contetMessage, setContentMessage] = useState("");
 
   const handleContentMessage = (event) => {
@@ -28,25 +26,44 @@ const Chats = ({room}) => {
   }
   
   const sendMessage = () => {
-    const message = {
+    const m = {
       contenido: contetMessage,
-      id_usuario: 1,
-      id_amigo: amigo.id
+      id_usuario: idUsuario,
+      id_amigo: idAmigo
     }
-    socket.emit("sending_message", {message, room});
-    setContentMessages([...messages, message]);
+    // socket.emit("sending_message", {message, room});
+    setMessages([...messages, m]);
     setContentMessage("");
   }
 
-  useEffect(() => {
-    // Conectarse a la sala con un amigo
-    socket.emit("joining_room", `${1}-${amigo.id}`);
+  const handleFriend = async (id_amigo) => {
+    setIdAmigo(id_amigo);
+    const res = await storageApi.post('chat/mensajes', {id_usuario: idUsuario, id_amigo: id_amigo});
+    setMessages(res.data);
+  }
 
-    // Escuchar si el amigo ha enviado algun mensaje
-    socket.on("relaying_message", m => {
-      setContentMessages([...messages, message]);
-    });
-  }, [socket])
+  const getUserId = async () => {
+    let res = await storageApi.post('chat/id_usuario', {usuario: user.username});
+    setIdUsuario(res.data.id_usuario);
+
+    res = await storageApi.post('chat/amigos', {id_usuario: res.data.id_usuario});
+    setAmigos(res.data.amigos);
+  }
+
+
+  useEffect(() => {
+    // Obtner id de usuario logeado
+    getUserId()
+
+
+    // // Conectarse a la sala con un amigo
+    // socket.emit("joining_room", `${idUsuario}-${amigo.id}`);
+
+    // // Escuchar si el amigo ha enviado algun mensaje
+    // socket.on("relaying_message", m => {
+    //   setContentMessages([...messages, message]);
+    // });
+  }, [])
 
   return (
     <>
@@ -61,20 +78,21 @@ const Chats = ({room}) => {
               <Grid container sx={{ mt: 2 }} alignItems="center" justifyContent="center">
                 <Grid item xs={1} lg={3} sx={{ p: 2 }}>
                   <Card sx={{ maxWidth: 445 }}>
-                    
-                    <Card>
-                      <CardHeader
-                        avatar={
-                          <Avatar sx={{ bgcolor: '#1c54b2' }} aria-label="recipe">
-                            R
-                          </Avatar>
-                        }
-                        title="Titulo publi"
-                      />
-                    </Card>
-
-
-
+                    {
+                      amigos.map(amigo => (
+                        <Card key={amigo.id_usuario}>
+                          <CardHeader
+                            avatar={
+                              <Avatar sx={{ bgcolor: '#1c54b2' }} aria-label="recipe">
+                                F
+                              </Avatar>
+                            }
+                            title={amigo.usuario}
+                            onClick={() => handleFriend(amigo.id_usuario)}
+                          />
+                        </Card>
+                      ))
+                    }
                   </Card>
                 </Grid>
 
@@ -87,35 +105,15 @@ const Chats = ({room}) => {
                       </div>
 
                       <div className="messages-chat">
-                        <div className="message">
-                          <div className="photo" style={styles.imgChat}>
-                            <div className="online"></div>
-                          </div>
-                          <p className="text"> 1 </p>
-                        </div>
-
-                        <div className="message text-only">
-                          <p className="text"> 2</p>
-                        </div>
-
-                        <div className="message text-only">
-                          <div className="response">
-                            <p className="text"> 3</p>
-                          </div>
-                        </div>
-
-                        <div className="message text-only">
-                          <div className="response">
-                            <p className="text">4</p>
-                          </div>
-                        </div>
-
-                        <div className="message">
-                          <div className="photo" style={styles.imgChat}>
-                            <div className="online"></div>
-                          </div>
-                          <p className="text">5</p>
-                        </div>
+                        {
+                          messages.map(m => (
+                            <div className="message" key={m.id_mensaje}>
+                              <div className={m.id_usuario === idUsuario? "message": "response"}>
+                                <p className="text">{m.contenido}</p>
+                              </div>
+                            </div>
+                          ))
+                        }
                       </div>
 
                       <input 

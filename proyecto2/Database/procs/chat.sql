@@ -1,6 +1,18 @@
 USE proyecto2;
 
-SELECT * FROM amistad a 
+-- Obtener id de usuario
+DROP PROCEDURE id_usuario;
+CREATE PROCEDURE id_usuario (
+	p_usuario VARCHAR(250)
+)
+BEGIN
+	SELECT
+	u.id AS id_usuario
+	FROM usuarios u
+	WHERE u.usuario = p_usuario;
+END;
+CALL id_usuario('serga');
+
 
 
 -- Obtener amigos
@@ -69,10 +81,13 @@ END;
 CALL mensajes(1, 2);
 
 
+SELECT * FROM usuarios u 
+SELECT * FROM amistad a 
 SELECT * FROM mensaje m 
 
+INSERT INTO amistad (usuario1, usuario2, estado)
+VALUES (1,4,1)
 
-
-
-
+INSERT INTO mensaje (contenido, fecha, id_usuario, id_amigo)
+VALUES ('hola', NOW(), id_usuario, id_amigo);
 
