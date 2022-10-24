@@ -87,17 +87,17 @@ app.post('/registrar', function (req, res) {
                                 name: nombre,
                                 modo_bot: 0
                         }
-                        
+            
                         // Guardar en Mysql
                         var query = `CALL Registrar('${resUser.uid}', '${resUser.name}', '${resUser.username}', '${encriptacion.encriptar(contrasenia)}','${resUser.email}','${resUser.ext_foto}');`
                         conexion.query(query, async function (err, result) {
                                 if (err) {
                                         res.status(400).json(err);
                                 } else {
+                                        await uploadToBucket(imgSubir, resUser.uid, 'fotos');
                                         res.status(201).json(resUser);
                                 }       
                         });
-
                         // const subirFoto = await uploadToBucket('fotos', imgSubir, result.user.username);
                 }
         });

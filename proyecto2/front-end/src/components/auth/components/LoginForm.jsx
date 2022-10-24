@@ -44,7 +44,15 @@ export const LoginForm = () => {
         <form onSubmit={handleSubmit(handleLogin)} className="animate__animated animate__fadeIn">
             <Divider sx={{ mt: 2 }} />
             <Grid container sx={{ mt: 2 }} alignItems="center" justifyContent="center">
-                <Button onClick={() => setUsarWebcam(!usarWebcam)} variant="outlined" fullWidth sx={{ mb: 2 }} endIcon={<PhotoCameraFrontIcon />}>Ingresar con faceID </Button>
+                <Grid item xs={12}>
+                    <TextField
+                        { ...register("usuario", { required: true }) }
+                        label="Usuario" variant="outlined" type="text" fullWidth
+                        error={errors.usuario}
+                        />
+                        {errors.usuario && <Alert severity="error">Usuario <strong>requerido</strong></Alert>}   
+                </Grid>
+                <Button type="submit" onClick={() => setUsarWebcam(!usarWebcam)} variant="outlined" fullWidth sx={{ mt: 2, mb: 1 }} endIcon={<PhotoCameraFrontIcon />}>Utilizar faceID </Button>
                 {usarWebcam && (
                     <>
                         <Webcam
@@ -59,16 +67,8 @@ export const LoginForm = () => {
                         <Typography variant='subtitle2' sx={{ mb: 2 }}>Verificando rostro... <LinearProgress  color="inherit" /></Typography>
                     </>
                 )}
-
-                <Grid item xs={12}>
-                    <TextField
-                        { ...register("usuario", { required: true }) }
-                        label="Usuario" variant="outlined" type="text" fullWidth
-                        error={errors.usuario}
-                        />
-                        {errors.usuario && <Alert severity="error">Usuario <strong>requerido</strong></Alert>}   
-                </Grid>
-                <Grid item xs={12} sx={{ mt: 2, mb: 2 }}>
+                <Typography variant='subtitle2'>O</Typography>
+                <Grid item xs={12} sx={{ mt: 1, mb: 2 }}>
                     <TextField 
                         { ...register("password", { required: true }) }
                         label="Contraseña" variant="outlined" type="password" fullWidth 
