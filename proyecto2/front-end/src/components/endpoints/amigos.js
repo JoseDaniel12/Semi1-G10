@@ -20,10 +20,11 @@ export function enviarSolicitud(usuario, destino) {
     return storageApi.post('amigos/enviarSolicitud', { usuario: usuario, destino: destino })
 }
 
+export function aceptarSolicitud(usuario, destino) {
+    return storageApi.post('amigos/aceptarSolicitud', { usuario: usuario, destino: destino })
+}
+
 export function rechazarSolicitud(user) {
     return storageApi.post('amigos/rechazarSolicitud', user)
 }
 
-export function aceptarSolicitud(user) {
-    return storageApi.post('amigos/aceptarSolicitud', user)
-}

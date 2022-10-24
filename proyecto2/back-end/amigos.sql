@@ -36,20 +36,28 @@ AND EXISTS (
 
 -- para obtener solicitudes recibidas
 SELECT * FROM usuarios us1
-WHERE id <> 1
+WHERE id <> 7
 AND EXISTS (
-	SELECT * FROM amistad am WHERE am.usuario2 = 1 AND am.usuario1 = us1.id AND am.estado = 0
+	SELECT * FROM amistad am WHERE am.usuario2 = 7 AND am.usuario1 = us1.id AND am.estado = 0
 );
 
 -- para obtener amigos
 SELECT * FROM usuarios us1
-WHERE id <> 1
+WHERE id <> 4
 AND EXISTS (
-	SELECT * FROM amistad am WHERE am.usuario1 = 1 AND am.usuario2 = us1.id AND am.estado = 1
+	SELECT * FROM amistad am WHERE am.usuario1 = 4 AND am.usuario2 = us1.id AND am.estado = 1
 )OR EXISTS (
-	SELECT * FROM amistad am WHERE am.usuario2 = 1 AND am.usuario1 = us1.id AND am.estado = 1
+	SELECT * FROM amistad am WHERE am.usuario2 = 4 AND am.usuario1 = us1.id AND am.estado = 1
 );
 
 -- enviar solicitud: usuario1 = remitente, usuario2 = receptor
 INSERT INTO amistad(usuario1, usuario2, estado) VALUES(1,4,FALSE);
+
+-- aceptar solicitud: usuario1 = remitente, usuario2 = receptor
+UPDATE amistad SET estado = 1 WHERE usuario1 = 4 AND usuario2 = 1;
+
+SELECT id FROM usuarios WHERE correo='mjeffryemanuel@gmail.com' AND usuario='jmengt';
+SELECT * FROM usuarios;
+SELECT * FROM amistad;
+
 

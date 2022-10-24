@@ -64,10 +64,6 @@ export const Inicio = () => {
   }
 
   function EnviarSolicitud(destino) {
-
-
-
-
     enviarSolicitud(user, destino).then((response) => {
       alert("solicitud enviada");
       console.log("esto recibio", response.data);
@@ -82,8 +78,22 @@ export const Inicio = () => {
     }).catch(err => {
       alert("Error :(");
     });
+  }
 
-    
+  function AceptarSolicitud(destino) {
+    aceptarSolicitud(user, destino).then((response) => {
+      alert("solicitud aceptada");
+      console.log("esto recibio", response.data);
+
+      const del = recibidas.filter(amigo => amigo.correo !== destino.correo);
+      setRecibidas(del);
+
+      const nuevosAmigos = [...amigos, destino];
+      setAmigos(nuevosAmigos)
+
+    }).catch(err => {
+      alert("Error :(");
+    });
   }
 
   function mostrarTitulos() {
@@ -130,12 +140,6 @@ export const Inicio = () => {
     } else if (estado === 1) {
       return (
         <>
-          <IconButton color="secondary" aria-label="delete">
-            <CheckIcon />
-          </IconButton>
-          <IconButton color="error" aria-label="delete">
-            <CancelIcon />
-          </IconButton>
         </>
       )
     } else {
@@ -198,7 +202,7 @@ export const Inicio = () => {
                                     <Typography variant="subtitle1" color="text.secondary" component="div">
                                       {usuario.nombre} - {usuario.correo}
                                     </Typography>
-                                    <IconButton color="secondary" aria-label="delete">
+                                    <IconButton color="secondary" aria-label="delete" onClick={() => AceptarSolicitud(usuario)}>
                                       <CheckIcon />
                                     </IconButton>
                                     <IconButton color="error" aria-label="delete">
