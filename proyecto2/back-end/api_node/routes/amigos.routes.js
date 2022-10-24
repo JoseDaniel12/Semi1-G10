@@ -10,5 +10,6 @@ router.post('/getRecibidas', amigos.getRecibidas);
 router.post('/getAmigos', amigos.getAmigos);
 router.post('/enviarSolicitud', amigos.enviarSolicitud);
 router.post('/aceptarSolicitud', amigos.aceptarSolicitud);
+router.post('/eliminarAmistad', amigos.eliminarAmistad);
 
 module.exports = router;

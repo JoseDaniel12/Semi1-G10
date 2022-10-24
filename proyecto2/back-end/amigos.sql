@@ -54,10 +54,15 @@ AND EXISTS (
 INSERT INTO amistad(usuario1, usuario2, estado) VALUES(1,4,FALSE);
 
 -- aceptar solicitud: usuario1 = remitente, usuario2 = receptor
-UPDATE amistad SET estado = 1 WHERE usuario1 = 4 AND usuario2 = 1;
+UPDATE amistad SET estado = 1 WHERE(usuario1 = 4 AND usuario2 = 1) OR (usuario1 = 1 AND usuario2 = 4);
+
+-- rechazar solicitud o eliminar amistad
+DELETE FROM amistad WHERE(usuario1 = 4 AND usuario2 = 1) OR (usuario1 = 1 AND usuario2 = 4);
 
 SELECT id FROM usuarios WHERE correo='mjeffryemanuel@gmail.com' AND usuario='jmengt';
 SELECT * FROM usuarios;
+
+UPDATE amistad SET estado = 0;
 SELECT * FROM amistad;
 
 

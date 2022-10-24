@@ -164,7 +164,37 @@ const aceptarSolicitud = async (req, res) => {
         return;
     };
     let query2 = `UPDATE amistad SET estado = 1
-                  WHERE usuario1 = ${id_destino} AND usuario2 = ${id_usuario};`
+                  WHERE(usuario1 = ${id_destino} AND usuario2 = ${id_usuario})
+                  OR (usuario1 = ${id_usuario} AND usuario2 = ${id_destino});`
+
+    try {
+        await db_exec.execute(query2);
+        res.status(200).json('OK');
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+        return;
+    };
+};
+
+const eliminarAmistad = async (req, res) => {
+    const { usuario, destino } = req.body;
+    const { email, username } = usuario;
+    const { id } = destino;
+    
+    let id_usuario = -1;
+    let id_destino = id;
+    let query1 = `SELECT id FROM usuarios WHERE correo='${email}' AND usuario='${username}';`
+    try {
+        id_usuario = await db_exec.execute(query1);
+        id_usuario = id_usuario.result[0].id;
+    } catch (err) {
+        res.status(400).json(err);
+        return;
+    };
+    let query2 = `DELETE FROM amistad
+                  WHERE(usuario1 = ${id_destino} AND usuario2 = ${id_usuario})
+                  OR (usuario1 = ${id_usuario} AND usuario2 = ${id_destino});`
 
     try {
         await db_exec.execute(query2);
@@ -182,5 +212,6 @@ module.exports = {
     getRecibidas,
     getAmigos,
     enviarSolicitud,
-    aceptarSolicitud
+    aceptarSolicitud,
+    eliminarAmistad
 };

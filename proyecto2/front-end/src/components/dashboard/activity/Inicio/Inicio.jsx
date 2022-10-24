@@ -13,7 +13,7 @@ import {
   getNoAmigos, getEnviadas,
   getRecibidas, getAmigos,
   enviarSolicitud, aceptarSolicitud,
-  rechazarSolicitud
+  eliminarAmistad
 } from "../../../endpoints/amigos";
 import { useAuthStore } from "../../../../hooks/useAuthStore";
 
@@ -30,23 +30,23 @@ export const Inicio = () => {
 
   useEffect(() => {
     getNoAmigos(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setNoAmigos(response.data);
       setUsuarios(response.data);
     });
 
     getEnviadas(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setEnviadas(response.data);
     });
 
     getRecibidas(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setRecibidas(response.data);
     });
 
     getAmigos(user).then((response) => {
-      console.log("esto recibio", response.data);
+      console.log(response.data);
       setAmigos(response.data);
     });
 
@@ -66,7 +66,7 @@ export const Inicio = () => {
   function EnviarSolicitud(destino) {
     enviarSolicitud(user, destino).then((response) => {
       alert("solicitud enviada");
-      console.log("esto recibio", response.data);
+      console.log(response.data);
 
       const del = noAmigos.filter(amigo => amigo.correo !== destino.correo);
       setNoAmigos(del);
@@ -83,13 +83,42 @@ export const Inicio = () => {
   function AceptarSolicitud(destino) {
     aceptarSolicitud(user, destino).then((response) => {
       alert("solicitud aceptada");
-      console.log("esto recibio", response.data);
+      console.log(response.data);
 
       const del = recibidas.filter(amigo => amigo.correo !== destino.correo);
       setRecibidas(del);
 
       const nuevosAmigos = [...amigos, destino];
       setAmigos(nuevosAmigos)
+
+    }).catch(err => {
+      alert("Error :(");
+    });
+  }
+
+  function EliminarAmistad(destino) {
+    eliminarAmistad(user, destino).then((response) => {
+      alert("Eliminado");
+      console.log(response.data);
+
+      // eliminar de solicitudes
+      if (estado === 1) {
+        const del = recibidas.filter(amigo => amigo.correo !== destino.correo);
+        setRecibidas(del);
+
+        const del1 = enviadas.filter(amigo => amigo.correo !== destino.correo);
+        setEnviadas(del1);
+        setUsuarios(del1);
+      }
+      // eliminar de amigos
+      else {
+        const del2 = amigos.filter(amigo => amigo.correo !== destino.correo);
+        setAmigos(del2);
+        setUsuarios(del2);
+      }
+
+      const nuevosNoAmigos = [...noAmigos, destino];
+      setNoAmigos(nuevosNoAmigos);
 
     }).catch(err => {
       alert("Error :(");
@@ -140,11 +169,17 @@ export const Inicio = () => {
     } else if (estado === 1) {
       return (
         <>
+          <IconButton color="error" aria-label="delete" onClick={() => EliminarAmistad(destino)}>
+            <CancelIcon />
+          </IconButton>
         </>
       )
     } else {
       return (
         <>
+          <IconButton color="error" aria-label="delete" onClick={() => EliminarAmistad(destino)}>
+            <CancelIcon />
+          </IconButton>
         </>
       )
     }
@@ -205,7 +240,7 @@ export const Inicio = () => {
                                     <IconButton color="secondary" aria-label="delete" onClick={() => AceptarSolicitud(usuario)}>
                                       <CheckIcon />
                                     </IconButton>
-                                    <IconButton color="error" aria-label="delete">
+                                    <IconButton color="error" aria-label="delete" onClick={() => EliminarAmistad(usuario)}>
                                       <CancelIcon />
                                     </IconButton>
                                   </Box>
