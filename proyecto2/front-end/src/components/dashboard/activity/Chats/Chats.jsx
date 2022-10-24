@@ -3,16 +3,18 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-// import io from "socket.io-client";
+import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../../../hooks/useAuthStore";
 import storageApi from "../../../../api/storageApi";
 
-// const socket = io.connect("http://localhost:3001");
+const socket = io.connect("http://localhost:9000");
 
 
-const Chats = ({room}) => {
+const Chats = () => {
   const {user} = useAuthStore();
+
+  const [room, setRoom] = useState('');
 
   const [idUsuario, setIdUsuario] = useState(-1);
   const [amigos, setAmigos] = useState([]);
@@ -20,6 +22,11 @@ const Chats = ({room}) => {
 
   const [messages, setMessages] = useState([]);
   const [contetMessage, setContentMessage] = useState("");
+
+  // Escuchar si el amigo ha enviado algun mensaje
+  socket.on("relaying_message", m => {
+    setMessages([...messages, m]);
+  });
 
   const handleContentMessage = (event) => {
     setContentMessage(event.target.value);
@@ -31,13 +38,21 @@ const Chats = ({room}) => {
       id_usuario: idUsuario,
       id_amigo: idAmigo
     }
-    // socket.emit("sending_message", {message, room});
+    socket.emit("sending_message", {m, room});
     setMessages([...messages, m]);
     setContentMessage("");
   }
 
   const handleFriend = async (id_amigo) => {
     setIdAmigo(id_amigo);
+
+    // Conectarse a la sala con un amigo
+    const ids = [idUsuario, id_amigo].sort()
+    const r =  `${ids[0]}-${ids[1]}`;
+    setRoom(r);
+    socket.emit("joining_room", r);
+
+    // Se obtiene los mensajes con el amigo
     const res = await storageApi.post('chat/mensajes', {id_usuario: idUsuario, id_amigo: id_amigo});
     setMessages(res.data);
   }
@@ -55,14 +70,6 @@ const Chats = ({room}) => {
     // Obtner id de usuario logeado
     getUserId()
 
-
-    // // Conectarse a la sala con un amigo
-    // socket.emit("joining_room", `${idUsuario}-${amigo.id}`);
-
-    // // Escuchar si el amigo ha enviado algun mensaje
-    // socket.on("relaying_message", m => {
-    //   setContentMessages([...messages, message]);
-    // });
   }, [])
 
   return (
@@ -79,8 +86,8 @@ const Chats = ({room}) => {
                 <Grid item xs={1} lg={3} sx={{ p: 2 }}>
                   <Card sx={{ maxWidth: 445 }}>
                     {
-                      amigos.map(amigo => (
-                        <Card key={amigo.id_usuario}>
+                      amigos.map((amigo, i) => (
+                        <Card key={i}>
                           <CardHeader
                             avatar={
                               <Avatar sx={{ bgcolor: '#1c54b2' }} aria-label="recipe">
@@ -106,8 +113,8 @@ const Chats = ({room}) => {
 
                       <div className="messages-chat">
                         {
-                          messages.map(m => (
-                            <div className="message" key={m.id_mensaje}>
+                          messages.map((m, i) => (
+                            <div className="message" key={i}>
                               <div className={m.id_usuario === idUsuario? "message": "response"}>
                                 <p className="text">{m.contenido}</p>
                               </div>
