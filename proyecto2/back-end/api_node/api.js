@@ -152,9 +152,14 @@ app.put('/editar', function (req, res) {
         var modobot = req.body.modobot;
         var correo = req.body.correo;
         var contrasenia = req.body.contrasenia;
-        const { foto } = req.files;
-        var extensionFoto = foto.name.split(".")[1];
+        var extensionFoto = "";
+        var foto = null;
 
+        if (req.files) { 
+                foto = req.files.foto;
+                extensionFoto = foto.name.split(".")[1]; 
+        }
+        
         // Comprobar contraseña
         var query = `SELECT contraseña FROM usuarios WHERE sub_cognito = '${subuser}'`;
         conexion.query(query, async function (err, result) {
@@ -177,47 +182,60 @@ app.put('/editar', function (req, res) {
                                                                 {
                                                                         Name: 'custom:modo_bot',
                                                                         Value: `${modobot}`
-                                                                },
-                                                                {
+                                                                }       
+                                                        ]
+
+                                                        if (foto) {
+                                                                attrList.push({
                                                                         Name: 'picture',
                                                                         Value: extensionFoto
-                                                                },
-                                                                {
-                                                                        Name: 'email',
-                                                                        Value: correo
-                                                                }
-                                                        ]
+                                                                }) 
+                                                        }
+
                                                         attrList.forEach(attr => {
                                                                 updateAttList.push(new AmazonCognitoIdentity.CognitoUserAttribute(attr));
                                                         })
 
                                                         cognitoUser.updateAttributes(updateAttList, (err, result) => {
                                                                 if (err) {
-                                                                        console.log(err)
+                                                                        console.log(err);
                                                                         return;
                                                                 }
-
+                                                                
+                                                                var query = "";
+                                                                if (foto) {
+                                                                        query = `UPDATE usuarios 
+                                                                                SET nombre='${nombre}', ext_foto='${extensionFoto}', modo_bot='${modobot}'
+                                                                                WHERE sub_cognito='${subuser}'`;
+                                                                } else {
+                                                                        query = `UPDATE usuarios 
+                                                                                SET nombre='${nombre}', modo_bot='${modobot}'
+                                                                                WHERE sub_cognito='${subuser}'`;
+                                                                }
+                                                                
                                                                 //Actualizar en DB
-                                                                var query = `UPDATE usuarios 
-                                                                        SET correo='${correo}', nombre='${nombre}', ext_foto='${extensionFoto}', modo_bot='${modobot}'
-                                                                        WHERE sub_cognito='${subuser}'`;
-
                                                                 conexion.query(query, async function (err, result) {
-                                                                        if (err) { res.status(400).json(err); }
+                                                                        if (err) { console.log(err); res.status(400).json(err); }
                                                                         else {
-                                                                                res.status(200).json(result)
+                                                                                if (foto) {
+                                                                                        await uploadToBucket(foto, subuser, 'fotos');
+                                                                                }
+                                                                                res.status(200).json(result);
                                                                         }
                                                                 });
                                                         })
                                                 },
                                                 onFailure: (err) => {    
+                                                        console.log(err, "ke");
                                                         res.status(400).json(err.message || JSON.stringify(err));
                                                 }
                                         });
                                 } else {
+                                        console.log("alv")
                                         res.status(400).json('contraseña incorrecta')
                                 }
                         } else {
+                                console.log("alv 2")
                                 res.status(400).json('correo o usuario no existe')
                         }
                 }

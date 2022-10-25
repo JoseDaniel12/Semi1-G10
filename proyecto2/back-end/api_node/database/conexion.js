@@ -13,11 +13,11 @@ const conn = mysql.createConnection({
 conn.connect(function (err) {
     if (err) {
       console.log(`ERROR: DB not connected: \n${err.stack}`);
-      console.log(`Host: ${con.host}`);
-      console.log(`Port: ${con.port}`);
-      console.log(`User: ${con.user}`);
-      console.log(`Database: ${con.database}`);
-      console.log(`Password: ${con.password}`);
+      console.log(`Host: ${conn.host}`);
+      console.log(`Port: ${conn.port}`);
+      console.log(`User: ${conn.user}`);
+      console.log(`Database: ${conn.database}`);
+      console.log(`Password: ${conn.password}`);
       return;
     }
     console.log('> Correct, DB connected.');

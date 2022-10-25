@@ -26,8 +26,15 @@ export const authSlice = createSlice({
             state.user = {};
             state.error = payload || null;
         },
+        onEdit: (state, {payload}) => {
+            state.status = authTypes.logged;
+            state.user = payload;
+        },
         onClearError: (state) => {
             state.error = null;
+        },
+        onChangeChecking: (state, {payload}) => {
+            state.status = payload;
         }
     },
 })
@@ -37,5 +44,7 @@ export const {
     onClearError,
     onLogin,
     onLogout,
+    onEdit,
+    onChangeChecking,
 
 } = authSlice.actions  

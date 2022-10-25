@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import storageApi from "../api/storageApi";
-import { onChecking, onLogin, onLogout } from "../store/auth/authSlice";
+import { onChangeChecking, onChecking, onLogin, onLogout, onEdit } from "../store/auth/authSlice";
 
 export const useAuthStore = () => {
 
@@ -55,6 +55,50 @@ export const useAuthStore = () => {
         }
     }
 
+    const startEdit = async({nombre, modo_bot, pwd, foto}) => {
+        dispatch(onChecking());
+
+        try {
+            let formData = new FormData();
+            formData.append("subuser", user.uid);
+            formData.append("usuario", user.username);
+            formData.append("nombre", nombre);
+            formData.append("modobot", modo_bot);
+            formData.append("correo", user.email);
+            formData.append("contrasenia", pwd)
+            formData.append("foto", foto[0]);
+      
+            const config = { headers: { 'content-type': 'multipart/form-data' } }
+            await storageApi.put("editar", formData, config);
+
+            const userUpdate = { ...user };
+            userUpdate.name = nombre;
+            userUpdate.modo_bot = modo_bot;
+
+            if (foto.length > 0) { userUpdate.ext_foto = foto[0].name.split(".")[1]; }
+
+            localStorage.setItem('user', JSON.stringify(userUpdate));
+            dispatch(onEdit(userUpdate));
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Datos actualizados',
+                confirmButtonColor: '#006064',
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al actualizar',
+                text: 'La contraseña es incorrecta',
+                confirmButtonColor: '#006064',
+            });
+
+            localStorage.setItem('user', JSON.stringify(user));
+            dispatch(onEdit(user));
+            dispatch(onChangeChecking(1));
+        }
+    }
+
     const startLogout = () => {
         localStorage.clear();
         dispatch(onLogout());
@@ -78,5 +122,6 @@ export const useAuthStore = () => {
         startLogin,
         startLogout,
         startRegister,
+        startEdit,
     }
 }
