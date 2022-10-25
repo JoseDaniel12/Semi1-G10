@@ -226,16 +226,13 @@ app.put('/editar', function (req, res) {
                                                         })
                                                 },
                                                 onFailure: (err) => {    
-                                                        console.log(err, "ke");
                                                         res.status(400).json(err.message || JSON.stringify(err));
                                                 }
                                         });
                                 } else {
-                                        console.log("alv")
                                         res.status(400).json('contraseña incorrecta')
                                 }
                         } else {
-                                console.log("alv 2")
                                 res.status(400).json('correo o usuario no existe')
                         }
                 }
