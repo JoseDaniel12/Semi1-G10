@@ -39,23 +39,28 @@ const io = new Server(server, {
 });
 
 
-io.on("connection",  (socket) => {
-        socket.on("joining_room", (room) => {
-                socket.join(room);
+io.on("connection",  (socket_client) => {
+        socket_client.on("joining_room", (room) => {
+                socket_client.join(room);
         });
 
-        socket.on("sending_message", async (data) => {
+        socket_client.on("sending_message", async (data) => {
                 const { contenido, id_usuario, id_amigo } = data.m;
-                socket.to(data.room).emit("relaying_message", data.m);
+                socket_client.to(data.room).emit("relaying_message", data.m);
                 await exec_proc('almacenar_mensaje', [contenido, id_usuario, id_amigo]);
 
                 const {modo_bot} = (await exec_proc('get_modo_bot', [id_amigo]))[0];
                 if (modo_bot === 1) {
-                        const message_contents = talk_to_bot(contenido);
-                        message_contents.map(mc => {
-                                socket.to(data.room).emit("relaying_message", mc.content);
+                        const message_contents = await talk_to_bot(contenido);
+                        message_contents.map(async mb => {
+                                const m = {
+                                        contenido: mb.content,
+                                        id_usuario: id_amigo,
+                                        id_amigo: id_usuario
+                                }
+                                io.in(data.room).emit("relaying_message", m);
+                                await exec_proc('almacenar_mensaje', [mb.content, id_amigo, id_usuario]);
                         })
-                        await exec_proc('almacenar_mensaje', [mc.contenido, id_amigo, id_usuario]);
                 }
         });
 })

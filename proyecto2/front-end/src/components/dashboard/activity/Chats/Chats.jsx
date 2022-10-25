@@ -33,6 +33,9 @@ const Chats = () => {
   }
   
   const sendMessage = () => {
+    if (!contetMessage) {
+      return;
+    }
     const m = {
       contenido: contetMessage,
       id_usuario: idUsuario,
