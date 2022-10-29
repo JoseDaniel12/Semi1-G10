@@ -282,6 +282,7 @@ app.post('/archivosAmigos', function (req, res) {
 app.use('/archivos', require('./routes/archivos.routes'));
 app.use('/amigos', require('./routes/amigos.routes'));
 app.use('/chat', require('./routes/chat.routes'));
+app.use('/publicaciones', require('./routes/publicaciones.routes'));
 
 
 server.listen(port, () => {
