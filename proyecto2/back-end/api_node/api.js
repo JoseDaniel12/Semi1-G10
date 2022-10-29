@@ -52,6 +52,9 @@ io.on("connection",  (socket_client) => {
                 const {modo_bot} = (await exec_proc('get_modo_bot', [id_amigo]))[0];
                 if (modo_bot === 1) {
                         const message_contents = await talk_to_bot(contenido);
+                        if (!message_contents) {
+                                return;
+                        }
                         message_contents.map(async mb => {
                                 const m = {
                                         contenido: mb.content,

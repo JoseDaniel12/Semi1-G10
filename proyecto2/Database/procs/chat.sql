@@ -23,7 +23,7 @@ BEGIN
 	SET modo_bot = p_modo_bot
 	WHERE id = p_id_usuario;
 END;
-CALL set_modo_bot(1, 1);
+CALL set_modo_bot(4, 0);
 
 
 -- Obtener id de usuario

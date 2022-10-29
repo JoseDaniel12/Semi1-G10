@@ -20,11 +20,18 @@ const lexparams = {
 
 
 const talk_to_bot = async message_content => {
-  lexparams.text = message_content
-  let response  = await lexruntime.recognizeText(lexparams);
-  if (!response.messages) {
-    response.messages = [];
+  lexparams.text = message_content;
+
+  let response = { 
+    messages: []
+  };
+  
+  try {
+    response  = await lexruntime.recognizeText(lexparams);
+  } catch(err) {
+  console.log(`Error con Bot: \n${err}`);
   }
+
   return response.messages;
 }
 

@@ -86,7 +86,7 @@ const Chats = () => {
               </Typography>
 
               <Grid container sx={{ mt: 2 }} alignItems="center" justifyContent="center">
-                <Grid item xs={1} lg={3} sx={{ p: 2 }}>
+                <Grid item xs={1} lg={3} sx={{ p: 2}}>
                   <Card sx={{ maxWidth: 445 }}>
                     {
                       amigos.map((amigo, i) => (
@@ -129,13 +129,18 @@ const Chats = () => {
                           }
                         </div>
 
-                        <input 
+                        <TextField
+                          className="input"
+                          variant="outlined"
+                          fullWidth sx={{ mt: 2 }}
                           value={contetMessage}
+                          multiline={true}
                           name="message"
                           type="text" 
                           placeholder="Escribe tu mensaje..."
                           onChange={handleContentMessage}
-                        />
+                        >
+                        </TextField> 
 
                         <button onClick={sendMessage}>
                           send
