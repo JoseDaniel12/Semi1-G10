@@ -14,12 +14,13 @@ const lexparams = {
   "botAliasId": "TSTALIASID",   // Enter the botAliasId
   "botId": "QYOJUW1LKO",        // Enter the botId
   "localeId": "es_ES",
-  "sessionId": "some_session_id",
-  "text": "",
+  "sessionId": "some_session_id", // Id para identificar una comunciacion especifica
+  "text": "",                     // Texto con el que se le hablara al bot
 };
 
 
-const talk_to_bot = async message_content => {
+const talk_to_bot = async (message_content, session_id) => {
+  lexparams.sessionId = session_id;
   lexparams.text = message_content;
 
   let response = { 
@@ -29,7 +30,7 @@ const talk_to_bot = async message_content => {
   try {
     response  = await lexruntime.recognizeText(lexparams);
   } catch(err) {
-  console.log(`Error con Bot: \n${err}`);
+    console.log(`Error con Bot: \n${err}`);
   }
 
   return response.messages;

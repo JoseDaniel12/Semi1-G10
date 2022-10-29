@@ -120,3 +120,4 @@ VALUES ('hola', NOW(), 1, 4);
 
 INSERT INTO mensaje (contenido, fecha, id_usuario, id_amigo)
 VALUES ('hola', NOW(), 4, 1);
+
