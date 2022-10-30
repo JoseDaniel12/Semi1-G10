@@ -99,6 +99,22 @@ export const useAuthStore = () => {
         }
     }
 
+    const startFaceID = async({usuario, fotoWebcam}) => {
+        try {
+            const { data } = await storageApi.post('faceID', { "webcam": fotoWebcam, "usuario_correo": usuario });
+            
+            localStorage.setItem('user', JSON.stringify(data));
+            dispatch(onLogin(data));
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al identificar tu cara',
+                text: 'Vuelve a intentarlo',
+                confirmButtonColor: '#006064',
+            });
+        }
+    }
+
     const startLogout = () => {
         localStorage.clear();
         dispatch(onLogout());
@@ -123,5 +139,6 @@ export const useAuthStore = () => {
         startLogout,
         startRegister,
         startEdit,
+        startFaceID,
     }
 }

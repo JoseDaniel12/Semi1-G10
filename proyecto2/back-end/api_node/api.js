@@ -1,5 +1,6 @@
 require('dotenv').config({ path: './.env' });
 const express = require('express');
+
 const http = require('http');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -10,6 +11,7 @@ const { Server } = require('socket.io');
 const { talk_to_bot } = require('./aws/amazon_lex')
 const { uploadToBucket, removeFromBucket } = require('./aws/s3');
 const prueba = require('./aws/amazon_lex')
+const { getParamsFotos, compararFotos } = require('./aws/rekognition');
 
 const app = express();
 const server = http.createServer(app);
@@ -242,41 +244,44 @@ app.put('/editar', function (req, res) {
         });
 });
 
-app.post('/allFiles', function (req, res) {
-        var userId = req.body.userId;
 
-        var query = "CALL AllFiles(" + userId + ");";
+app.post('/faceID', function (req, res) {
+        const webcam = req.body.webcam;
+        const usuario_correo = req.body.usuario_correo;
+
+        var query = `SELECT sub_cognito, nombre, usuario, correo, ext_foto, modo_bot FROM usuarios WHERE usuario = '${usuario_correo}' OR correo = '${usuario_correo}';`
         conexion.query(query, async function (err, result) {
                 if (err) {
-                        throw err;
+                        res.status(400).json(err);
                 } else {
-                        var resultado = result[0];
-                        if (resultado != undefined) {
-                                res.status(200).json({ "archivos": resultado })
-                        } else {
-                                res.status(400).json({ "archivos": [] })
+                        const resUser = {
+                                uid: result[0].sub_cognito,
+                                username: result[0].usuario,
+                                email: result[0].correo,
+                                ext_foto: result[0].ext_foto,
+                                name: result[0].nombre,
+                                modo_bot: result[0].modo_bot
                         }
-                }
-        });
-})
 
-app.post('/archivosAmigos', function (req, res) {
-        var userId = req.body.userId;
+                        try {
+                                const url_foto =  resUser.uid + "." + resUser.ext_foto;
+                                const paramsID = getParamsFotos(webcam, url_foto);
 
-        var query = "CALL ArchivosAmigos(" + userId + ");";
-        conexion.query(query, async function (err, result) {
-                if (err) {
-                        throw err;
-                } else {
-                        var resultado = result[0];
-                        if (resultado != undefined) {
-                                res.status(200).json({ "archivos": resultado })
-                        } else {
-                                res.status(400).json({ "archivos": [] })
+                                const similitud = await compararFotos(paramsID);
+                                console.log(`Peticion faceid ${usuario_correo}:`, similitud);
+
+                                if (similitud > 70) { 
+                                        res.status(200).json(resUser);
+                                } else {
+                                        res.status(400).json({ message: 'No se parecen' })
+                                }
+                        } catch(e) {
+                                console.log(e);
                         }
-                }
+                }       
         });
-})
+});
+
 
 
 app.use('/archivos', require('./routes/archivos.routes'));

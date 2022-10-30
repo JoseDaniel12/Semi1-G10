@@ -59,9 +59,6 @@ function initAWS (region = aws_keys.cognito.region, identityPoolId = aws_keys.co
 }
   
 function decodeJWTToken(token) {
-
-    console.log(jwt_decode(token.idToken));
-
     const { email, name, 'cognito:username': username, 'custom:modo_bot': modo_bot, picture, exp, auth_time, token_use, sub} = jwt_decode(token.idToken);
 
     return { username, email, name, ext_foto: picture, modo_bot: parseInt(modo_bot), uid: sub };
