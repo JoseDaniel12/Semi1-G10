@@ -9,6 +9,12 @@ const aws_keys = {
         identityPoolId: 'us-east-2:cc29c303-4801-4484-96b3-0e08f0dfda66'
     },
 
+    cognito2: {
+        region: 'us-east-2',
+        grupoID: 'us-east-2_ORSx3ONyJ',
+        gclientID: '3ocg406fgm44v4q8a5he9m5v4i'
+    },
+
     rekognition: {
         region: '',
         accessKeyId: '',
