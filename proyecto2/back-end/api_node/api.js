@@ -35,7 +35,7 @@ const conexion = mysql.createConnection({
 // Sockets
 const io = new Server(server, {
         cors: {
-                origin: process.env.FRONTEND,
+                origin: "*",
                 methods: ['GET', 'POST']
         }
 });

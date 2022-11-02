@@ -1,0 +1,7 @@
+version: "3"
+services:
+  semi-front:
+    container_name: 'front-semi'
+    image: "jd12122000/front-semi1"
+    ports:
+      - "5173:5173"
