@@ -8,7 +8,7 @@ import { useEffect, useState, useRef  } from "react";
 import { useAuthStore } from "../../../../hooks/useAuthStore";
 import storageApi from "../../../../api/storageApi";
 
-const socket = io.connect("http://localhost:9000");
+const socket = io.connect("http://107.20.103.96:9000");
 
 
 const Chats = () => {
