@@ -187,55 +187,56 @@ app.put('/editar', function (req, res) {
                                                         WHERE sub_cognito='${subuser}'`;
                                         }
 
-                                        //Actualizar en DB
-                                        conexion.query(query, async function (err, result) {
-                                                if (err) { console.log(err); res.status(400).json(err); }
-                                                else {
+                                        var cognitoUser = new AmazonCognitoIdentity.CognitoUser({Username: usuario, Pool: AwsCognito.getUserPool()})
+                                        cognitoUser.authenticateUser(AwsCognito.getAuthDetails(usuario, contrasenia), {
+                                                onSuccess: (result) => {
+                                                        // Actualizar en Cognito
+                                                        var updateAttList = [];
+                                                        var attrList = [
+                                                                {
+                                                                        Name: 'name',
+                                                                        Value: nombre
+                                                                },
+                                                                {
+                                                                        Name: 'custom:modo_bot',
+                                                                        Value: `${modobot}`
+                                                                }       
+                                                        ]
+
                                                         if (foto) {
-                                                                await uploadToBucket(foto, subuser, 'fotos');
+                                                                attrList.push({
+                                                                        Name: 'picture',
+                                                                        Value: extensionFoto
+                                                                }) 
                                                         }
-                                                        res.status(200).json(result);
+
+                                                        attrList.forEach(attr => {
+                                                                updateAttList.push(new AmazonCognitoIdentity.CognitoUserAttribute(attr));
+                                                        })
+
+                                                        cognitoUser.updateAttributes(updateAttList, (err, result) => {
+                                                                if (err) {
+                                                                        console.log(err);
+                                                                        return;
+                                                                }   
+                                                        })
+
+                                                        //Actualizar en DB
+                                                        conexion.query(query, async function (err, result) {
+                                                                if (err) { console.log(err); res.status(400).json(err); }
+                                                                else {
+                                                                        if (foto) {
+                                                                                await uploadToBucket(foto, subuser, 'fotos');
+                                                                        }
+                                                                        res.status(200).json(result);
+                                                                }
+                                                        });
+                                                        
+                                                },
+                                                onFailure: (err) => {    
+                                                        res.status(400).json(err.message || JSON.stringify(err));
                                                 }
                                         });
-
-                                        // var cognitoUser = new AmazonCognitoIdentity.CognitoUser({Username: usuario, Pool: AwsCognito.getUserPool()})
-                                        // cognitoUser.authenticateUser(AwsCognito.getAuthDetails(usuario, contrasenia), {
-                                        //         onSuccess: (result) => {
-                                        //                 // Actualizar en Cognito
-                                        //                 var updateAttList = [];
-                                        //                 var attrList = [
-                                        //                         {
-                                        //                                 Name: 'name',
-                                        //                                 Value: nombre
-                                        //                         },
-                                        //                         {
-                                        //                                 Name: 'custom:modo_bot',
-                                        //                                 Value: `${modobot}`
-                                        //                         }       
-                                        //                 ]
-
-                                        //                 if (foto) {
-                                        //                         attrList.push({
-                                        //                                 Name: 'picture',
-                                        //                                 Value: extensionFoto
-                                        //                         }) 
-                                        //                 }
-
-                                        //                 attrList.forEach(attr => {
-                                        //                         updateAttList.push(new AmazonCognitoIdentity.CognitoUserAttribute(attr));
-                                        //                 })
-
-                                        //                 cognitoUser.updateAttributes(updateAttList, (err, result) => {
-                                        //                         if (err) {
-                                        //                                 console.log(err);
-                                        //                                 return;
-                                        //                         }   
-                                        //                 })
-                                        //         },
-                                        //         onFailure: (err) => {    
-                                        //                 res.status(400).json(err.message || JSON.stringify(err));
-                                        //         }
-                                        // });
                                 } else {
                                         res.status(400).json('contraseña incorrecta')
                                 }
