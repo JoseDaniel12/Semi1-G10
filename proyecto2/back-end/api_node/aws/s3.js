@@ -39,6 +39,19 @@ const uploadToBucket = (file, short_file_name, directory) => {
     return s3.upload(params).promise();
 };
 
+const subirAlBucket = (nombre_de_archivo, archivo, directorio) => {
+    const stream = fs.createReadStream(archivo.tempFilePath);
+    const key = `${directorio}/${nombre_de_archivo}`;
+   
+    const params = {
+        Bucket: bucket,
+        Key: key,
+        Body: stream,
+        ContentType: 'image'
+    };
+    return s3.upload(params).promise();
+};
+
 const removeFromBucket = async (s3_key) => {
     const params = {
         Bucket: bucket,
@@ -74,5 +87,6 @@ module.exports = {
     uploadToBucket,
     copyObject,
     removeFromBucket,
+    subirAlBucket,
     renameObject,
 };

@@ -38,7 +38,28 @@ function compararFotos(params) {
     });
 }
 
+function obtenerEtiquetas(params) {
+    return new Promise(resolve => {
+        AWS.config.update({
+            accessKeyId: process.env.AWS_ACCES_KEY,
+            secretAccessKey: process.env.AWS_SECRET_KEY,
+            region: process.env.AWS_REGION
+        });
+
+        const client = new AWS.Rekognition();
+
+        client.detectLabels(params, function(err, response) {
+            if (err) {
+                console.log(err, err.stack); // an error occurred
+            } else {
+                resolve(response)
+            }
+        });
+    });
+}
+
 module.exports = {
     compararFotos,
+    obtenerEtiquetas,
     getParamsFotos,
 }

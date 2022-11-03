@@ -1,21 +1,3 @@
-DROP DATABASE IF EXISTS proyecto2;
-CREATE DATABASE IF NOT EXISTS proyecto2;
-USE proyecto2;
-
-
-CREATE TABLE IF NOT EXISTS mensaje (
-	id_mensaje INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	contenido VARCHAR(500),
-	fecha DATETIME,
-	id_usuario INT NOT NULL,
-	id_amigo INT NOT NULL,
-	
-	FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_amigo) REFERENCES usuarios (id) ON DELETE CASCADE
-);
-
-
-
 CREATE TABLE IF NOT EXISTS publicación (
     s3_key VARCHAR(255) NOT NULL,
     texto VARCHAR(500),
@@ -31,7 +13,6 @@ CREATE TABLE IF NOT EXISTS etiqueta (
     PRIMARY KEY (publicación, texto_etiqueta),
     FOREIGN KEY (publicación) REFERENCES publicación (s3_key)
 );
-
 
 DELIMITER //
 CREATE PROCEDURE IF NOT EXISTS
