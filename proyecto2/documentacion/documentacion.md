@@ -39,3 +39,11 @@ Dentro de las politicas utilizadas se encuentran las siguientes:
 ![make](./img/politicas-jose.jpg)
 - La pimer politica creada en la imagen es para que el usario de amazon lex puedan invocar funciones lamda para brindar de mayor interactividad al bot creado.
 - La segunda politica que aparece en la imagen para que los usuarios puedan almacenar sus fotos sin probelmas dentro del servicio de s3.
+
+### Translate, API Gateway, Lambda
+Para la traducción de publicaciones se implementó una función en lamba utilizando Python3.7, se utilizó aws translate
+![make](./img/lambda-william1.png)
+![make](./img/lambda-william.png)
+
+Se agregó API Gateway como desencadenador de la función lambda, esta API es de tipo http, se le habilitaron cors, y se le creó un endpoint de tipo POST: '/traducir' para ejecutar la funcion lambda.
+![make](./img/api-william.PNG)
